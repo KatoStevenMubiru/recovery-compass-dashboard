@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import RecoveryProgress from "./pages/Progress";
 import Emergency from "./pages/Emergency";
+import DailyReports from "./pages/DailyReports";
 import NotFound from "./pages/NotFound";
 import { useState } from "react";
 
@@ -29,6 +30,7 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/progress" element={<RecoveryProgress />} />
             <Route path="/emergency" element={<Emergency />} />
+            <Route path="/daily-reports" element={<DailyReports />} />
             <Route path="/journal" element={<NotFound />} />
             <Route path="/appointments" element={<NotFound />} />
             <Route path="/support" element={<NotFound />} />

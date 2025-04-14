@@ -10,7 +10,8 @@ import {
   Settings, 
   HelpCircle,
   LogOut,
-  AlertTriangle
+  AlertTriangle,
+  FileText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { icon: Home, label: "Dashboard", path: "/" },
   { icon: BarChart2, label: "Progress", path: "/progress" },
+  { icon: FileText, label: "Daily Reports", path: "/daily-reports" },
   { icon: BookOpen, label: "Journal", path: "/journal" },
   { icon: Calendar, label: "Appointments", path: "/appointments" },
   { icon: MessageSquare, label: "Support", path: "/support" },
