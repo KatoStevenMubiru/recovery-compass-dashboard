@@ -9,7 +9,8 @@ import {
   MessageSquare,
   Settings, 
   HelpCircle,
-  LogOut
+  LogOut,
+  AlertTriangle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ const navItems = [
   { icon: BookOpen, label: "Journal", path: "/journal" },
   { icon: Calendar, label: "Appointments", path: "/appointments" },
   { icon: MessageSquare, label: "Support", path: "/support" },
+  { icon: AlertTriangle, label: "Emergency SOS", path: "/emergency" },
 ];
 
 const bottomNavItems = [
@@ -66,7 +68,9 @@ export const Sidebar = ({ isMobile, onClose }: SidebarProps) => {
                 variant="ghost"
                 className={cn(
                   "w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                  currentPath === item.path && "bg-sidebar-accent text-sidebar-accent-foreground"
+                  currentPath === item.path && "bg-sidebar-accent text-sidebar-accent-foreground",
+                  item.path === "/emergency" && "mt-2 bg-red-600/20 text-red-600 hover:bg-red-600/30 hover:text-red-700",
+                  currentPath === "/emergency" && item.path === "/emergency" && "bg-red-600/30 text-red-700"
                 )}
               >
                 <item.icon className="mr-2 h-5 w-5" />
