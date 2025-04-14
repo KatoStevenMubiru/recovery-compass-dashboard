@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,7 +33,6 @@ const mockData = {
   protectiveFactors: ["Strong support system", "Consistent medication adherence", "Regular therapy attendance"]
 };
 
-// Renamed the component from Progress to RecoveryProgress to avoid name conflict
 const RecoveryProgress = () => {
   const { toast } = useToast();
   const [mood, setMood] = useState(5);
@@ -44,7 +42,6 @@ const RecoveryProgress = () => {
   const [moodNotes, setMoodNotes] = useState("");
   const [showDetails, setShowDetails] = useState(false);
   
-  // Function to handle mood submission
   const handleMoodSubmit = () => {
     toast({
       title: "Mood recorded",
@@ -54,7 +51,6 @@ const RecoveryProgress = () => {
     setMoodNotes("");
   };
 
-  // Function to handle journal submission
   const handleJournalSubmit = () => {
     if (journal.trim() === "") {
       toast({
@@ -72,7 +68,6 @@ const RecoveryProgress = () => {
     setJournal("");
   };
 
-  // Function to handle goal submission
   const handleGoalSubmit = () => {
     if (goal.trim() === "") {
       toast({
@@ -90,7 +85,6 @@ const RecoveryProgress = () => {
     setGoal("");
   };
 
-  // Function to handle medication submission
   const handleMedicationSubmit = () => {
     if (!medicationTaken) {
       toast({
@@ -127,13 +121,14 @@ const RecoveryProgress = () => {
     <DashboardLayout pageTitle="Recovery Progress">
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold">Recovery Journey</h2>
+          <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Recovery Journey
+          </h2>
           <p className="text-muted-foreground">
             Track your progress, manage your recovery goals, and view personalized recommendations
           </p>
         </div>
 
-        {/* Sobriety Tracker */}
         <Card className="gradient-card border-0 shadow-md">
           <CardHeader>
             <div className="flex justify-between items-center">
@@ -185,9 +180,7 @@ const RecoveryProgress = () => {
           </CardContent>
         </Card>
         
-        {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Days in Recovery */}
           <Card className="gradient-card border-0 shadow-md">
             <CardHeader className="pb-2">
               <CardTitle className="text-md text-primary flex items-center gap-2">
@@ -200,7 +193,6 @@ const RecoveryProgress = () => {
             </CardContent>
           </Card>
 
-          {/* Recovery Status */}
           <Card className="gradient-card border-0 shadow-md">
             <CardHeader className="pb-2">
               <CardTitle className="text-md text-primary flex items-center gap-2">
@@ -213,7 +205,6 @@ const RecoveryProgress = () => {
             </CardContent>
           </Card>
 
-          {/* Next Check-in */}
           <Card className="gradient-card border-0 shadow-md">
             <CardHeader className="pb-2">
               <CardTitle className="text-md text-primary flex items-center gap-2">
@@ -227,9 +218,7 @@ const RecoveryProgress = () => {
           </Card>
         </div>
 
-        {/* Mood & Journal Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Mood Tracker */}
           <Card className="gradient-card border-0 shadow-md">
             <CardHeader>
               <CardTitle className="text-lg">How are you feeling today?</CardTitle>
@@ -261,7 +250,6 @@ const RecoveryProgress = () => {
             </CardContent>
           </Card>
 
-          {/* Journal */}
           <Card className="gradient-card border-0 shadow-md">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -284,9 +272,7 @@ const RecoveryProgress = () => {
           </Card>
         </div>
 
-        {/* Medication Adherence & Goals Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Medication Adherence */}
           <Card className="gradient-card border-0 shadow-md">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -323,7 +309,6 @@ const RecoveryProgress = () => {
             </CardContent>
           </Card>
 
-          {/* Recovery Goals */}
           <Card className="gradient-card border-0 shadow-md">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -356,7 +341,6 @@ const RecoveryProgress = () => {
           </Card>
         </div>
 
-        {/* Academic Impact */}
         <Card className="gradient-card border-0 shadow-md">
           <CardHeader>
             <CardTitle className="text-lg">Academic Impact</CardTitle>
@@ -383,7 +367,6 @@ const RecoveryProgress = () => {
           </CardContent>
         </Card>
 
-        {/* Personalized Plan */}
         <Card className="gradient-card border-0 shadow-md">
           <CardHeader>
             <div className="flex justify-between items-center">

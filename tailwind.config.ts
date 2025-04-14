@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -80,6 +79,11 @@ export default {
 						yellow: '#FEF7CD',
 						purple: '#E5DEFF',
 					}
+				},
+				backgroundImage: {
+					'gradient-primary': 'linear-gradient(to right, #8B5CF6, #0EA5E9)',
+					'gradient-secondary': 'linear-gradient(to right, #4ECDC4, #7E69AB)',
+					'gradient-accent': 'linear-gradient(to right, #F97316, #1EAEDB)',
 				}
 			},
 			borderRadius: {
