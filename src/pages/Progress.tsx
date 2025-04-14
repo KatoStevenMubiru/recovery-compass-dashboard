@@ -34,7 +34,8 @@ const mockData = {
   protectiveFactors: ["Strong support system", "Consistent medication adherence", "Regular therapy attendance"]
 };
 
-const Progress = () => {
+// Renamed the component from Progress to RecoveryProgress to avoid name conflict
+const RecoveryProgress = () => {
   const { toast } = useToast();
   const [mood, setMood] = useState(5);
   const [journal, setJournal] = useState("");
@@ -179,7 +180,7 @@ const Progress = () => {
                 <span>Progress to next milestone</span>
                 <span>{mockData.daysInRecovery % 30}/30 days ({Math.round((mockData.daysInRecovery % 30) / 30 * 100)}%)</span>
               </div>
-              <Progress value={(mockData.daysInRecovery % 30) / 30 * 100} className="h-2" />
+              <Progress value={(mockData.daysInRecovery % 30) / 30 * 100} />
             </div>
           </CardContent>
         </Card>
@@ -317,7 +318,7 @@ const Progress = () => {
                   <span>Monthly Adherence Rate</span>
                   <span>{mockData.medicationAdherence}%</span>
                 </div>
-                <Progress value={mockData.medicationAdherence} className="h-2" />
+                <Progress value={mockData.medicationAdherence} />
               </div>
             </CardContent>
           </Card>
@@ -348,8 +349,7 @@ const Progress = () => {
                   <span>{mockData.goalsCompleted} / {mockData.goalsTotal} completed</span>
                 </div>
                 <Progress 
-                  value={(mockData.goalsCompleted / mockData.goalsTotal) * 100} 
-                  className="h-2" 
+                  value={(mockData.goalsCompleted / mockData.goalsTotal) * 100}
                 />
               </div>
             </CardContent>
@@ -366,7 +366,7 @@ const Progress = () => {
             <div className="mb-6">
               <div className="flex items-center">
                 <div className="grow">
-                  <Progress value={mockData.academicImpact} className="h-3" />
+                  <Progress value={mockData.academicImpact} />
                 </div>
                 <div className="ml-4 min-w-16 text-2xl font-bold">
                   {mockData.academicImpact}%
@@ -407,8 +407,7 @@ const Progress = () => {
                 <div className="text-lg font-bold">{mockData.riskScore}%</div>
               </div>
               <Progress 
-                value={mockData.riskScore} 
-                className={`h-2 ${mockData.riskScore < 30 ? "bg-green-200" : mockData.riskScore < 60 ? "bg-amber-200" : "bg-red-200"}`}
+                value={mockData.riskScore}
               />
               <div className="mt-1 text-sm text-right text-muted-foreground">
                 {getRiskLevelLabel(mockData.riskScore)}
@@ -467,4 +466,4 @@ const Progress = () => {
   );
 };
 
-export default Progress;
+export default RecoveryProgress;
