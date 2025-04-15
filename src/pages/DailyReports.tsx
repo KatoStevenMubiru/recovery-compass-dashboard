@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { DailyReportHeader } from "@/components/daily-reports/DailyReportHeader";
@@ -44,7 +45,6 @@ const DailyReports = () => {
   
   const handleGeneratePDF = () => {
     setIsPdfGenerating(true);
-    // Simulate PDF generation
     setTimeout(() => {
       setIsPdfGenerating(false);
       console.log("PDF would be generated here");
@@ -54,19 +54,22 @@ const DailyReports = () => {
   return (
     <DashboardLayout pageTitle="Daily Recovery Reports">
       <div className="space-y-6">
-        <DailyReportHeader
-          date={date}
-          onDateChange={setDate}
-          onGeneratePDF={handleGeneratePDF}
-          isPdfGenerating={isPdfGenerating}
-        />
+        <div className="mb-6">
+          <DailyReportHeader
+            date={date}
+            onDateChange={setDate}
+            onGeneratePDF={handleGeneratePDF}
+            isPdfGenerating={isPdfGenerating}
+          />
+        </div>
 
-        <SobrietyStatus sobriety={mockDailyReport.sobriety} />
-
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold mb-6">Daily Progress</h2>
-          <ProgressIndicators summary={mockDailyReport.progress_summary} />
-        </Card>
+        <div className="grid gap-6">
+          <SobrietyStatus sobriety={mockDailyReport.sobriety} />
+          <Card className="p-6">
+            <h2 className="text-2xl font-semibold mb-6">Daily Progress</h2>
+            <ProgressIndicators summary={mockDailyReport.progress_summary} />
+          </Card>
+        </div>
       </div>
     </DashboardLayout>
   );

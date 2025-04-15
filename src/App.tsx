@@ -8,6 +8,7 @@ import Emergency from "./pages/Emergency";
 import DailyReports from "./pages/DailyReports";
 import NotFound from "./pages/NotFound";
 import Community from "./pages/Community";
+import Medication from "./pages/Medication";
 import { useState } from "react";
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
             <Route path="/emergency" element={<Emergency />} />
             <Route path="/daily-reports" element={<DailyReports />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/medication" element={<Medication />} />
             <Route path="/journal" element={<NotFound />} />
             <Route path="/appointments" element={<NotFound />} />
             <Route path="/support" element={<NotFound />} />
