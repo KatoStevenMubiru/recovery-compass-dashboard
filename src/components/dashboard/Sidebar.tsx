@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
@@ -11,7 +10,8 @@ import {
   HelpCircle,
   LogOut,
   AlertTriangle,
-  FileText
+  FileText,
+  Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ const navItems = [
   { icon: BookOpen, label: "Journal", path: "/journal" },
   { icon: Calendar, label: "Appointments", path: "/appointments" },
   { icon: MessageSquare, label: "Support", path: "/support" },
+  { icon: Users, label: "Community", path: "/community" },
   { icon: AlertTriangle, label: "Emergency SOS", path: "/emergency" },
 ];
 

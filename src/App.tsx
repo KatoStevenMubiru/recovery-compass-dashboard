@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -8,10 +7,10 @@ import RecoveryProgress from "./pages/Progress";
 import Emergency from "./pages/Emergency";
 import DailyReports from "./pages/DailyReports";
 import NotFound from "./pages/NotFound";
+import Community from "./pages/Community";
 import { useState } from "react";
 
 const App = () => {
-  // Create a client
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
@@ -31,6 +30,7 @@ const App = () => {
             <Route path="/progress" element={<RecoveryProgress />} />
             <Route path="/emergency" element={<Emergency />} />
             <Route path="/daily-reports" element={<DailyReports />} />
+            <Route path="/community" element={<Community />} />
             <Route path="/journal" element={<NotFound />} />
             <Route path="/appointments" element={<NotFound />} />
             <Route path="/support" element={<NotFound />} />
