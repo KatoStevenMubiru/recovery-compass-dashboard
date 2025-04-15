@@ -12,7 +12,9 @@ import Medication from "./pages/Medication";
 import Resources from "./pages/Resources";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Profile from "./pages/Profile";
 import { useState } from "react";
+import ChatbotWidget from "@/components/ui/ChatbotWidget";
 
 // Create the QueryClient outside of the component
 const queryClient = new QueryClient({
@@ -46,10 +48,12 @@ const App = () => {
             <Route path="/settings" element={<NotFound />} />
             <Route path="/help" element={<NotFound />} />
             <Route path="/logout" element={<NotFound />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
+      <ChatbotWidget />
     </QueryClientProvider>
   );
 };
