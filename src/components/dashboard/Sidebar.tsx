@@ -11,8 +11,7 @@ import {
   LogOut,
   AlertTriangle,
   FileText,
-  Users,
-  Bookmark
+  Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,14 +24,13 @@ const navItems = [
   { icon: Calendar, label: "Appointments", path: "/appointments" },
   { icon: MessageSquare, label: "Support", path: "/support" },
   { icon: Users, label: "Community", path: "/community" },
-  { icon: Bookmark, label: "Resources", path: "/resources" },
   { icon: AlertTriangle, label: "Emergency SOS", path: "/emergency" },
 ];
 
 const bottomNavItems = [
   { icon: Settings, label: "Settings", path: "/settings" },
   { icon: HelpCircle, label: "Help", path: "/help" },
-  { icon: LogOut, label: "Logout", path: "/logout" },
+  { icon: LogOut, label: "Logout", path: "/login" },
 ];
 
 interface SidebarProps {
