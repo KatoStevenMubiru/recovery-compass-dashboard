@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sidebar } from "./Sidebar";
@@ -7,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -45,10 +45,12 @@ export const DashboardLayout = ({ children, pageTitle }: DashboardLayoutProps) =
             <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
             </Button>
-            <Avatar>
-              <AvatarImage src="" />
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
+            <Link to="/profile">
+              <Avatar className="cursor-pointer">
+                <AvatarImage src="" />
+                <AvatarFallback>JD</AvatarFallback>
+              </Avatar>
+            </Link>
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
