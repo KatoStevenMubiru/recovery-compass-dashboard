@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -10,6 +9,9 @@ import DailyReports from "./pages/DailyReports";
 import NotFound from "./pages/NotFound";
 import Community from "./pages/Community";
 import Medication from "./pages/Medication";
+import Resources from "./pages/Resources";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import { useState } from "react";
 
 // Create the QueryClient outside of the component
@@ -29,6 +31,8 @@ const App = () => {
         <Toaster />
         <BrowserRouter>
           <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/" element={<Index />} />
             <Route path="/progress" element={<RecoveryProgress />} />
             <Route path="/emergency" element={<Emergency />} />
@@ -38,6 +42,7 @@ const App = () => {
             <Route path="/journal" element={<NotFound />} />
             <Route path="/appointments" element={<NotFound />} />
             <Route path="/support" element={<NotFound />} />
+            <Route path="/resources" element={<Resources />} />
             <Route path="/settings" element={<NotFound />} />
             <Route path="/help" element={<NotFound />} />
             <Route path="/logout" element={<NotFound />} />
