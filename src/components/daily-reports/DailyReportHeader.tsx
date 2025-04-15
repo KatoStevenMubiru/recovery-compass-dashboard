@@ -3,8 +3,9 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Download } from "lucide-react";
+import { Download, Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface DailyReportHeaderProps {
   date: Date | undefined;
@@ -19,8 +20,8 @@ export function DailyReportHeader({ date, onDateChange, onGeneratePDF, isPdfGene
       <div className="flex-1">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left">
-              <Calendar className="mr-2 h-4 w-4" />
+            <Button variant="outline" className="w-full justify-start text-left font-normal">
+              <CalendarIcon className="mr-2 h-4 w-4" />
               {date ? format(date, "PPP") : "Select date"}
             </Button>
           </PopoverTrigger>
@@ -30,7 +31,7 @@ export function DailyReportHeader({ date, onDateChange, onGeneratePDF, isPdfGene
               selected={date}
               onSelect={onDateChange}
               initialFocus
-              className="p-3 pointer-events-auto"
+              className={cn("p-3 pointer-events-auto")}
             />
           </PopoverContent>
         </Popover>

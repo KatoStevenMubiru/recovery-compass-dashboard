@@ -5,6 +5,7 @@ import { DailyReportHeader } from "@/components/daily-reports/DailyReportHeader"
 import { SobrietyStatus } from "@/components/daily-reports/SobrietyStatus";
 import { ProgressIndicators } from "@/components/daily-reports/ProgressIndicators";
 import { Card } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data for the daily report
 const mockDailyReport = {
@@ -42,11 +43,16 @@ const mockDailyReport = {
 const DailyReports = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
+  const { toast } = useToast();
   
   const handleGeneratePDF = () => {
     setIsPdfGenerating(true);
     setTimeout(() => {
       setIsPdfGenerating(false);
+      toast({
+        title: "PDF Generated",
+        description: "Your daily report PDF has been generated successfully",
+      });
       console.log("PDF would be generated here");
     }, 2000);
   };
