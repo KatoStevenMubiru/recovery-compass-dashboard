@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,7 @@ import {
   BarChart2, 
   Download, 
   FileText, 
-  MoodHappy, 
+  Smile,
   PencilLine, 
   Clock,
   CheckCircle2, 
@@ -188,7 +187,7 @@ const DailyReports = () => {
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <MoodHappy className="h-5 w-5" />
+                    <Smile className="h-5 w-5" />
                     <h3 className="font-medium">Mood Average</h3>
                   </div>
                   <p className="text-xl font-bold">
@@ -265,7 +264,7 @@ const DailyReports = () => {
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-xl font-medium flex items-center gap-2 mb-4">
-                  <MoodHappy className="h-5 w-5" />
+                  <Smile className="h-5 w-5" />
                   Mood Entries
                 </h3>
                 <Separator className="my-4" />
