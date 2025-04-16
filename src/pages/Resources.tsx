@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import {
@@ -187,7 +188,7 @@ const Resources = () => {
   const [activeTab, setActiveTab] = useState("counselors");
 
   return (
-    <DashboardLayout>
+    <DashboardLayout pageTitle="Resources & Support">
       <div className="container max-w-7xl mx-auto p-4">
         <div className="flex flex-col gap-2 mb-6">
           <div className="flex items-center justify-between">
