@@ -13,17 +13,16 @@ import Resources from "./pages/Resources";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
-import { useState } from "react";
-import ChatbotWidget from "@/components/ui/ChatbotWidget";
 import Journal from "./pages/Journal";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
+import { useState } from "react";
+import ChatbotWidget from "@/components/ui/ChatbotWidget";
 
-// Create the QueryClient outside of the component
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
     },
   },

@@ -61,7 +61,6 @@ import {
   Info
 } from "lucide-react";
 
-// Types for events
 type EventType = {
   id: string;
   title: string;
@@ -74,7 +73,6 @@ type EventType = {
   attendees?: string[];
 };
 
-// Color mapping for event types
 const eventTypeColors = {
   "support-group": "bg-blue-100 text-blue-600 hover:bg-blue-200",
   "counseling": "bg-green-100 text-green-600 hover:bg-green-200",
@@ -98,7 +96,6 @@ export function Calendar() {
   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
   const [filterType, setFilterType] = useState<string>("all");
   
-  // New event form state
   const [newEvent, setNewEvent] = useState<Omit<EventType, "id">>({
     title: "",
     description: "",
@@ -109,7 +106,6 @@ export function Calendar() {
     type: "support-group"
   });
   
-  // Form validation
   const [errors, setErrors] = useState({
     title: "",
     date: "",
@@ -118,14 +114,12 @@ export function Calendar() {
     location: ""
   });
   
-  // Handle input changes for new event form
   const handleInputChange = (field: string, value: string) => {
     setNewEvent(prev => ({
       ...prev,
       [field]: value
     }));
     
-    // Clear validation error when user types
     if (errors[field as keyof typeof errors]) {
       setErrors(prev => ({
         ...prev,
@@ -134,7 +128,6 @@ export function Calendar() {
     }
   };
   
-  // Validate form
   const validateForm = () => {
     const newErrors = {
       title: "",
@@ -172,13 +165,11 @@ export function Calendar() {
     return !Object.values(newErrors).some(error => error);
   };
   
-  // Add a new event
   const handleAddEvent = (closeDialog: () => void) => {
     if (!validateForm()) return;
     
     setIsLoading(true);
     
-    // Simulate API call
     setTimeout(() => {
       const newEventWithId = {
         ...newEvent,
@@ -188,7 +179,6 @@ export function Calendar() {
       
       setEvents(prev => [...prev, newEventWithId]);
       
-      // Reset form
       setNewEvent({
         title: "",
         description: "",
@@ -211,7 +201,6 @@ export function Calendar() {
     }, 1000);
   };
   
-  // Get events for the selected date
   const getEventsForDate = (date: Date) => {
     return events.filter(event => {
       const eventDate = parseISO(event.date);
@@ -219,7 +208,6 @@ export function Calendar() {
     });
   };
   
-  // Get events for the current view (filtered)
   const getFilteredEvents = () => {
     if (filterType === "all") {
       return events;
@@ -227,23 +215,19 @@ export function Calendar() {
     return events.filter(event => event.type === filterType);
   };
   
-  // Handle attendance for an event
   const handleAttendEvent = (eventId: string) => {
     setEvents(prev => 
       prev.map(event => {
         if (event.id === eventId) {
           const attendees = event.attendees || [];
-          // In a real app, use actual user ID
           const userId = "user-1"; 
           
           if (attendees.includes(userId)) {
-            // User is already attending, remove them
             return {
               ...event,
               attendees: attendees.filter(id => id !== userId)
             };
           } else {
-            // Add user to attendees
             return {
               ...event,
               attendees: [...attendees, userId]
@@ -260,15 +244,12 @@ export function Calendar() {
     });
   };
   
-  // Check if current user is attending an event
   const isAttending = (event: EventType) => {
-    const userId = "user-1"; // In a real app, use actual user ID
+    const userId = "user-1";
     return event.attendees?.includes(userId);
   };
   
-  // Delete an event
   const handleDeleteEvent = (eventId: string) => {
-    // In a real app, would likely have role-based permissions check here
     setEvents(prev => prev.filter(event => event.id !== eventId));
     
     toast({
@@ -277,14 +258,12 @@ export function Calendar() {
     });
   };
   
-  // Handle day click in calendar
   const handleDateSelect = (day: Date | undefined) => {
     if (day) {
       setDate(day);
     }
   };
   
-  // Render day contents for the calendar
   const renderDayContents = (day: Date) => {
     const dayEvents = events.filter(event => {
       const eventDate = parseISO(event.date);
@@ -326,7 +305,6 @@ export function Calendar() {
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-7 gap-6">
-      {/* Calendar View */}
       <Card className="md:col-span-5">
         <CardHeader className="pb-2 pt-4 flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Recovery Calendar</CardTitle>
@@ -500,9 +478,9 @@ export function Calendar() {
                   onSelect={handleDateSelect}
                   className="p-0"
                   components={{
-                    Day: ({ day, ...props }) => (
+                    Day: ({ date, ...props }: { date: Date }) => (
                       <button {...props}>
-                        {renderDayContents(day)}
+                        {renderDayContents(date)}
                       </button>
                     )
                   }}
@@ -643,10 +621,10 @@ export function Calendar() {
                         <TableCell>{event.location}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className={`${
-                            event.type === "support-group" ? "bg-blue-50 text-blue-600 hover:bg-blue-100" : 
-                            event.type === "counseling" ? "bg-green-50 text-green-600 hover:bg-green-100" : 
-                            event.type === "workshop" ? "bg-purple-50 text-purple-600 hover:bg-purple-100" : 
-                            "bg-amber-50 text-amber-600 hover:bg-amber-100"
+                            event.type === "support-group" ? "bg-blue-50 text-blue-600" : 
+                            event.type === "counseling" ? "bg-green-50 text-green-600" : 
+                            event.type === "workshop" ? "bg-purple-50 text-purple-600" : 
+                            "bg-amber-50 text-amber-600"
                           }`}>
                             {eventTypeLabels[event.type]}
                           </Badge>
@@ -700,7 +678,6 @@ export function Calendar() {
         </CardContent>
       </Card>
       
-      {/* Event Details Panel */}
       <Card className="md:col-span-2">
         <CardHeader className="pb-2 pt-4">
           <CardTitle className="text-lg">Event Details</CardTitle>
@@ -826,7 +803,6 @@ export function Calendar() {
   );
 }
 
-// Mock events data
 const mockEvents: EventType[] = [
   {
     id: "event-1",
@@ -883,4 +859,4 @@ const mockEvents: EventType[] = [
     type: "workshop",
     attendees: []
   }
-]; 
+];

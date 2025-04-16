@@ -17,7 +17,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock user data
 const currentUser = {
   id: "user-1",
   name: "Kato Steven",
@@ -30,32 +29,27 @@ const currentUser = {
 export function SuccessStories() {
   const { toast } = useToast();
   
-  // State for stories
   const [stories, setStories] = useState(mockStories);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // State for form
   const [storyData, setStoryData] = useState({
     title: "",
     content: "",
     tags: ""
   });
   
-  // State for validation errors
   const [errors, setErrors] = useState({
     title: "",
     content: ""
   });
   
-  // Handle form input changes
   const handleInputChange = (field: string, value: string) => {
     setStoryData(prev => ({
       ...prev,
       [field]: value
     }));
     
-    // Clear validation error when user types
     if (errors[field as keyof typeof errors]) {
       setErrors(prev => ({
         ...prev,
@@ -64,7 +58,6 @@ export function SuccessStories() {
     }
   };
   
-  // Validate form before submission
   const validateForm = () => {
     const newErrors = {
       title: "",
@@ -85,13 +78,11 @@ export function SuccessStories() {
     return !newErrors.title && !newErrors.content;
   };
   
-  // Submit a new story
   const handleSubmit = () => {
     if (!validateForm()) return;
     
     setIsSubmitting(true);
     
-    // Simulate API call with timeout
     setTimeout(() => {
       const tags = storyData.tags.split(',')
         .map(tag => tag.trim())
@@ -111,7 +102,6 @@ export function SuccessStories() {
       
       setStories(prev => [newStory, ...prev]);
       
-      // Reset form
       setStoryData({
         title: "",
         content: "",
@@ -128,7 +118,6 @@ export function SuccessStories() {
     }, 1000);
   };
   
-  // Handle like functionality
   const handleLike = (storyId: string) => {
     setStories(prev => 
       prev.map(story => 
@@ -142,7 +131,6 @@ export function SuccessStories() {
     });
   };
   
-  // Handle bookmark functionality
   const handleBookmark = (storyId: string) => {
     setStories(prev => 
       prev.map(story => 
@@ -159,9 +147,7 @@ export function SuccessStories() {
     });
   };
   
-  // Handle share functionality
   const handleShare = (storyId: string) => {
-    // In a real implementation, this would open a share dialog
     toast({
       description: "Share feature will be implemented soon",
       duration: 2000
@@ -170,7 +156,6 @@ export function SuccessStories() {
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {/* Story Form */}
       <Card className="p-4 md:col-span-1">
         <CardHeader className="pb-2 pt-4">
           <CardTitle className="text-lg">Share Your Success Story</CardTitle>
@@ -259,7 +244,6 @@ export function SuccessStories() {
         </CardFooter>
       </Card>
 
-      {/* Success Stories Feed */}
       <div className="md:col-span-2 space-y-6">
         <Card className="p-4">
           <CardHeader className="pb-2 pt-4">
@@ -277,7 +261,6 @@ export function SuccessStories() {
           
           <CardContent className="space-y-6 pt-2">
             {isLoading ? (
-              // Loading state
               Array(2).fill(0).map((_, i) => (
                 <Card key={i} className="p-4">
                   <div className="space-y-3">
@@ -370,7 +353,7 @@ export function SuccessStories() {
                               className="flex items-center gap-1 px-2"
                               onClick={() => handleLike(story.id)}
                             >
-                              <Heart className={`h-4 w-4 ${story.liked ? "fill-red-500 text-red-500" : ""}`} />
+                              <Heart className={`h-4 w-4 ${story.isLiked ? "fill-red-500 text-red-500" : ""}`} />
                               <span>{story.likes}</span>
                             </Button>
                           </TooltipTrigger>
@@ -414,7 +397,6 @@ export function SuccessStories() {
           )}
         </Card>
         
-        {/* Inspirational alert */}
         <Alert className="bg-primary/5 border-primary/20">
           <AlertDescription className="text-sm">
             <span className="font-medium">Recovery is a journey, not a destination.</span> Every step forward, no matter how small, is a victory worth celebrating.
@@ -425,7 +407,6 @@ export function SuccessStories() {
   );
 }
 
-// Enhanced mock stories
 const mockStories = [
   {
     id: "story-1",
@@ -436,7 +417,8 @@ const mockStories = [
     date: "2023-02-15T10:24:00Z",
     likes: 42,
     tags: ["Academic Success", "Recovery Milestone", "Sobriety"],
-    saved: false
+    saved: false,
+    isLiked: true
   },
   {
     id: "story-2",
@@ -447,6 +429,7 @@ const mockStories = [
     date: "2023-01-22T16:05:00Z",
     likes: 37,
     tags: ["Creative Recovery", "Art Therapy", "Career Success"],
-    saved: true
+    saved: true,
+    isLiked: false
   }
 ];
