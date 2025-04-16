@@ -183,11 +183,32 @@ const resourcesData = {
   ]
 };
 
+const recoveryResources = [
+  {
+    title: "Understanding Addiction",
+    description: "A guide to addiction challenges for university students.",
+    url: "https://example.com/article1",
+    icon: BookOpen,
+  },
+  {
+    title: "Stress Management Techniques",
+    description: "Video guide for managing stress during exams.",
+    url: "https://example.com/video1",
+    icon: BookOpen,
+  },
+  {
+    title: "Official Counseling Services",
+    description: "University mental health and addiction services.",
+    url: "https://counseling.mak.ac.ug",
+    icon: UserIcon,
+  },
+];
+
 const Resources = () => {
   const [activeTab, setActiveTab] = useState("counselors");
 
   return (
-    <DashboardLayout>
+    <DashboardLayout pageTitle="Recovery Resources & Support">
       <div className="container max-w-7xl mx-auto p-4">
         <div className="flex flex-col gap-2 mb-6">
           <div className="flex items-center justify-between">
@@ -212,6 +233,31 @@ const Resources = () => {
             </p>
           </div>
         </div>
+
+        {/* Recovery Resources Section */}
+        <Card className="mb-8 border-0 shadow-md">
+          <CardHeader>
+            <CardTitle>Recovery Resources</CardTitle>
+            <CardDescription>Helpful articles, videos, and links to support your recovery journey.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recoveryResources.map((res, idx) => (
+                <a href={res.url} target="_blank" rel="noopener noreferrer" key={idx} className="block">
+                  <Card className="hover:shadow-lg transition-shadow border-0">
+                    <CardHeader className="flex flex-row items-center gap-3 pb-2">
+                      <res.icon className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-base">{res.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-sm text-muted-foreground">{res.description}</div>
+                    </CardContent>
+                  </Card>
+                </a>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         <Tabs defaultValue="counselors" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-3 lg:grid-cols-6 mb-8">
