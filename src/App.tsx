@@ -13,14 +13,15 @@ import Resources from "./pages/Resources";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import Journal from "./pages/Journal";
+import Settings from "./pages/Settings";
 import { useState } from "react";
 import ChatbotWidget from "@/components/ui/ChatbotWidget";
 
-// Create the QueryClient outside of the component
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
     },
   },
@@ -41,13 +42,12 @@ const App = () => {
             <Route path="/daily-reports" element={<DailyReports />} />
             <Route path="/community" element={<Community />} />
             <Route path="/medication" element={<Medication />} />
-            <Route path="/journal" element={<NotFound />} />
+            <Route path="/journal" element={<Journal />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/appointments" element={<NotFound />} />
             <Route path="/support" element={<NotFound />} />
             <Route path="/resources" element={<Resources />} />
-            <Route path="/settings" element={<NotFound />} />
             <Route path="/help" element={<NotFound />} />
-            <Route path="/logout" element={<NotFound />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
