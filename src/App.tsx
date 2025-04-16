@@ -15,6 +15,9 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import { useState } from "react";
 import ChatbotWidget from "@/components/ui/ChatbotWidget";
+import Journal from "./pages/Journal";
+import Settings from "./pages/Settings";
+import Help from "./pages/Help";
 
 // Create the QueryClient outside of the component
 const queryClient = new QueryClient({
@@ -41,12 +44,12 @@ const App = () => {
             <Route path="/daily-reports" element={<DailyReports />} />
             <Route path="/community" element={<Community />} />
             <Route path="/medication" element={<Medication />} />
-            <Route path="/journal" element={<NotFound />} />
+            <Route path="/journal" element={<Journal />} />
             <Route path="/appointments" element={<NotFound />} />
             <Route path="/support" element={<NotFound />} />
             <Route path="/resources" element={<Resources />} />
-            <Route path="/settings" element={<NotFound />} />
-            <Route path="/help" element={<NotFound />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/help" element={<Help />} />
             <Route path="/logout" element={<NotFound />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
