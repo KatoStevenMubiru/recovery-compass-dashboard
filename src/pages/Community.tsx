@@ -64,7 +64,7 @@ const Community = () => {
         </div>
 
         <Tabs defaultValue="forums" className="space-y-6">
-          <TabsList className="grid grid-cols-2 md:grid-cols-3 w-full">
+          <TabsList className="grid grid-cols-2 md:grid-cols-2 w-full">
             <TabsTrigger value="forums" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
               <span>Discussion Forums</span>
@@ -72,10 +72,6 @@ const Community = () => {
             <TabsTrigger value="stories" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span>Success Stories</span>
-            </TabsTrigger>
-            <TabsTrigger value="resources" className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              <span>Resources</span>
             </TabsTrigger>
           </TabsList>
 
@@ -103,20 +99,6 @@ const Community = () => {
               </CardHeader>
               <CardContent>
                 <SuccessStories />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="resources">
-            <Card>
-              <CardHeader>
-                <CardTitle>Recovery Resources</CardTitle>
-                <CardDescription>
-                  Access helpful articles, videos, and documents to support your recovery.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Resources />
               </CardContent>
             </Card>
           </TabsContent>
