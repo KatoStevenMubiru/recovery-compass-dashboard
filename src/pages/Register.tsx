@@ -34,6 +34,7 @@ import {
   Phone,
   BookOpen,
   CheckCircle,
+  Users,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Toast } from "@/components/ui/toast";
@@ -55,6 +56,7 @@ const Register = () => {
     firstName: "",
     lastName: "",
     email: "",
+    anonymousName: "",
     studentId: "",
     program: "",
     password: "",
@@ -103,6 +105,7 @@ const Register = () => {
     if (!form.lastName) newErrors.lastName = "Last name is required";
     if (!form.email) newErrors.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = "Please enter a valid email address";
+    if (!form.anonymousName) newErrors.anonymousName = "Anonymous name is required";
     
     if (!form.studentId) newErrors.studentId = "Student ID is required";
     if (!form.program) newErrors.program = "Program is required";
@@ -278,6 +281,28 @@ const Register = () => {
                 {errors.email && (
                   <p className="text-sm text-destructive">{errors.email}</p>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="anonymousName" className={errors.anonymousName ? "text-destructive" : ""}>
+                  Anonymous Forum Name
+                </Label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="anonymousName"
+                    value={form.anonymousName}
+                    onChange={(e) => handleChange("anonymousName", e.target.value)}
+                    className={`pl-10 ${errors.anonymousName ? "border-destructive" : ""}`}
+                    placeholder="Enter a display name for the community forum"
+                  />
+                </div>
+                {errors.anonymousName && (
+                  <p className="text-sm text-destructive">{errors.anonymousName}</p>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  This name will be shown in the community forum to protect your privacy
+                </p>
               </div>
             </div>
             
