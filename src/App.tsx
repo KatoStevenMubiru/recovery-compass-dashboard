@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 import Journal from "./pages/Journal";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
+import Appointments from "./pages/Appointments";
 import { useState } from "react";
 import ChatbotWidget from "@/components/ui/ChatbotWidget";
 
@@ -44,7 +45,7 @@ const App = () => {
             <Route path="/community" element={<Community />} />
             <Route path="/medication" element={<Medication />} />
             <Route path="/journal" element={<Journal />} />
-            <Route path="/appointments" element={<NotFound />} />
+            <Route path="/appointments" element={<Appointments />} />
             <Route path="/support" element={<NotFound />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/settings" element={<Settings />} />
