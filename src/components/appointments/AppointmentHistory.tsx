@@ -9,7 +9,10 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Search } from "lucide-react";
 import { useState } from "react";
+import { Appointment } from "./AppointmentScheduler"; // Import the Appointment type
 
 // Mock data for past appointments
 const mockPastAppointments = [
@@ -60,21 +63,29 @@ const mockPastAppointments = [
   },
 ];
 
-export function AppointmentHistory() {
-  const [pastAppointments, setPastAppointments] = useState(mockPastAppointments);
+interface AppointmentHistoryProps {
+  appointments: Appointment[];
+}
+
+export function AppointmentHistory({ appointments }: AppointmentHistoryProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredAppointments = pastAppointments.filter(
+  const filteredAppointments = appointments.filter(
     (appointment) =>
-      appointment.provider.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      appointment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       appointment.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      appointment.location.toLowerCase().includes(searchQuery.toLowerCase())
+      appointment.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      appointment.status.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getBadgeVariant = (status: string) => {
+  const getBadgeVariant = (status: Appointment["status"] | string) => {
     switch (status) {
+      case "confirmed":
+        return "success";
       case "completed":
         return "success";
+      case "pending":
+        return "warning";
       case "cancelled":
         return "destructive";
       case "no-show":
@@ -87,62 +98,69 @@ export function AppointmentHistory() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 className="text-2xl font-semibold tracking-tight">Appointment History</h2>
+        <h2 className="text-xl font-semibold tracking-tight text-primary">Appointment History</h2>
         <div className="flex gap-2">
-          <Input
-            placeholder="Search appointments..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-xs"
-          />
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search appointments..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 max-w-xs"
+            />
+          </div>
           <Button variant="outline">Export</Button>
         </div>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Provider</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Time</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredAppointments.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
-                  No past appointments found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredAppointments.map((appointment) => (
-                <TableRow key={appointment.id}>
-                  <TableCell className="font-medium">{appointment.provider}</TableCell>
-                  <TableCell>{appointment.type}</TableCell>
-                  <TableCell>{appointment.date}</TableCell>
-                  <TableCell>{appointment.time}</TableCell>
-                  <TableCell>{appointment.location}</TableCell>
-                  <TableCell>
-                    <Badge variant={getBadgeVariant(appointment.status) as any}>
-                      {appointment.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      Details
-                    </Button>
-                  </TableCell>
+      <Card className="gradient-card border-0 shadow-md">
+        <CardContent className="p-0">
+          <div className="rounded-md">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Provider</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Time</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              </TableHeader>
+              <TableBody>
+                {filteredAppointments.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                      No appointment history found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredAppointments.map((appointment) => (
+                    <TableRow key={appointment.id}>
+                      <TableCell className="font-medium">{appointment.title}</TableCell>
+                      <TableCell>{appointment.type}</TableCell>
+                      <TableCell>{appointment.date}</TableCell>
+                      <TableCell>{appointment.time}</TableCell>
+                      <TableCell>{appointment.location}</TableCell>
+                      <TableCell>
+                        <Badge variant={getBadgeVariant(appointment.status) as any}>
+                          {appointment.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm">
+                          Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 } 
