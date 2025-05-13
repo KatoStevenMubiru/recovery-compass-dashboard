@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
-  { icon: Home, label: "Dashboard", path: "/" },
+  { icon: Home, label: "Dashboard", path: "/dashboard" },
   { icon: BarChart2, label: "Progress", path: "/progress" },
   { icon: FileText, label: "Daily Reports", path: "/daily-reports" },
   { icon: Pill, label: "Medication", path: "/medication" },

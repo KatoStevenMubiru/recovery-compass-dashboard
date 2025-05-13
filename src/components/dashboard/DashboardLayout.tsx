@@ -7,15 +7,27 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
   pageTitle: string;
 }
 
-export const DashboardLayout = ({ children, pageTitle }: DashboardLayoutProps) => {
+export const DashboardLayout = ({
+  children,
+  pageTitle,
+}: DashboardLayoutProps) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
+
+  const getUserInitials = () => {
+    if (!user) return "U";
+    const firstInitial = user.first_name?.[0]?.toUpperCase() || "";
+    const lastInitial = user.last_name?.[0]?.toUpperCase() || "";
+    return firstInitial + lastInitial || "U";
+  };
 
   return (
     <div className="flex h-screen bg-background">
@@ -48,7 +60,7 @@ export const DashboardLayout = ({ children, pageTitle }: DashboardLayoutProps) =
             <Link to="/profile">
               <Avatar className="cursor-pointer">
                 <AvatarImage src="" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarFallback>{getUserInitials()}</AvatarFallback>
               </Avatar>
             </Link>
           </div>
