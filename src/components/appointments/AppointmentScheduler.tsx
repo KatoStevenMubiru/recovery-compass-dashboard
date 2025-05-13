@@ -12,38 +12,101 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 
-export function AppointmentScheduler() {
+interface AppointmentSchedulerProps {
+  onScheduleAppointment: (appointment: Omit<Appointment, "id" | "status">) => void;
+  onSwitchToUpcoming?: () => void; // Optional: to switch tab after scheduling
+}
+
+// Define an Appointment type (can be moved to a types file later)
+export interface Appointment {
+  id: string | number;
+  title: string; // Healthcare provider name
+  type: string; // Appointment Type
+  date: string; // ISO string or formatted string
+  time: string;
+  location: string;
+  notes?: string;
+  status: "confirmed" | "pending" | "cancelled";
+}
+
+export function AppointmentScheduler({ onScheduleAppointment, onSwitchToUpcoming }: AppointmentSchedulerProps) {
   const { toast } = useToast();
-  const [date, setDate] = useState<Date>();
+  const [provider, setProvider] = useState<string>("");
+  const [appointmentType, setAppointmentType] = useState<string>("");
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [time, setTime] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [notes, setNotes] = useState<string>("");
   
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!provider || !appointmentType || !date || !time || !location) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields (Provider, Type, Date, Time, Location).",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const newAppointment = {
+      title: provider, // Using provider name as title for consistency with AppointmentsList mock
+      type: appointmentType,
+      date: format(date, "yyyy-MM-dd"), // Store date consistently
+      time,
+      location,
+      notes,
+      // Status will be set by parent, typically 'pending' or 'confirmed'
+    };
+
+    // Find provider display name to show in toast
+    // This is a bit of a hack; ideally, provider data would be structured
+    let providerDisplayName = provider;
+    if (provider === "dr-johnson") providerDisplayName = "Dr. Sarah Johnson";
+    else if (provider === "dr-lee") providerDisplayName = "Dr. Michael Lee";
+    else if (provider === "dr-patel") providerDisplayName = "Dr. Anita Patel";
+    else if (provider === "dr-williams") providerDisplayName = "Dr. Robert Williams";
+
+
+    onScheduleAppointment(newAppointment as Omit<Appointment, "id" | "status">);
     
     toast({
       title: "Appointment Scheduled",
-      description: "Your appointment has been scheduled successfully.",
+      description: `Your ${appointmentType} with ${providerDisplayName} on ${format(date, "PPP")} at ${time} has been requested.`,
     });
+
+    // Reset form
+    setProvider("");
+    setAppointmentType("");
+    setDate(undefined);
+    setTime("");
+    setLocation("");
+    setNotes("");
+
+    if (onSwitchToUpcoming) {
+      onSwitchToUpcoming();
+    }
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">Schedule New Appointment</h2>
+        <h2 className="text-xl font-semibold tracking-tight text-primary">Schedule New Appointment</h2>
         <p className="text-sm text-muted-foreground">
           Book an appointment with your healthcare providers
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Appointment Details</CardTitle>
+      <Card className="gradient-card border-0 shadow-md">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg text-primary">Appointment Details</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="provider">Healthcare Provider</Label>
-                <Select required>
+                <Label htmlFor="provider">Healthcare Provider *</Label>
+                <Select required value={provider} onValueChange={setProvider}>
                   <SelectTrigger id="provider">
                     <SelectValue placeholder="Select a provider" />
                   </SelectTrigger>
@@ -57,8 +120,8 @@ export function AppointmentScheduler() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="appointmentType">Appointment Type</Label>
-                <Select required>
+                <Label htmlFor="appointmentType">Appointment Type *</Label>
+                <Select required value={appointmentType} onValueChange={setAppointmentType}>
                   <SelectTrigger id="appointmentType">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
@@ -73,7 +136,7 @@ export function AppointmentScheduler() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="date">Date</Label>
+                <Label htmlFor="date">Date *</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -84,7 +147,7 @@ export function AppointmentScheduler() {
                       )}
                       id="date"
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                       {date ? format(date, "PPP") : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
@@ -101,8 +164,8 @@ export function AppointmentScheduler() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="time">Time</Label>
-                <Select required>
+                <Label htmlFor="time">Time *</Label>
+                <Select required value={time} onValueChange={setTime}>
                   <SelectTrigger id="time">
                     <SelectValue placeholder="Select time" />
                   </SelectTrigger>
@@ -119,8 +182,8 @@ export function AppointmentScheduler() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <Select required>
+                <Label htmlFor="location">Location *</Label>
+                <Select required value={location} onValueChange={setLocation}>
                   <SelectTrigger id="location">
                     <SelectValue placeholder="Select location" />
                   </SelectTrigger>
@@ -138,6 +201,8 @@ export function AppointmentScheduler() {
               <Label htmlFor="notes">Additional Notes</Label>
               <Textarea
                 id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
                 placeholder="Any specific concerns or information for your provider..."
                 className="resize-none"
               />
