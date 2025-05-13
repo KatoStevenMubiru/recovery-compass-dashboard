@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,16 +15,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { 
-  AlertTriangle, 
-  Mail, 
-  Lock, 
-  User, 
+import {
+  AlertTriangle,
+  Mail,
+  Lock,
+  User,
   Globe,
   HelpCircle,
   ArrowRight,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Mock logo - replace with actual logo
 const Logo = () => (
@@ -39,8 +40,8 @@ const EmergencySupport = () => {
 
   return (
     <div className="mb-6">
-      <Button 
-        variant="destructive" 
+      <Button
+        variant="destructive"
         className="w-full flex items-center justify-center gap-2"
         size="lg"
         onClick={() => setIsOpen(!isOpen)}
@@ -48,14 +49,21 @@ const EmergencySupport = () => {
         <HelpCircle className="h-5 w-5" />
         Need Immediate Support?
       </Button>
-      
+
       {isOpen && (
         <div className="mt-3 p-4 border rounded-lg bg-muted">
           <h4 className="font-semibold mb-2">Support Resources:</h4>
-          <p className="mb-2">• National Addiction Hotline: <strong>0800-123-456</strong></p>
-          <p className="mb-3">• Campus Counseling: <strong>0772-789-012</strong></p>
+          <p className="mb-2">
+            • National Addiction Hotline: <strong>0800-123-456</strong>
+          </p>
+          <p className="mb-3">
+            • Campus Counseling: <strong>0772-789-012</strong>
+          </p>
           <Button asChild className="w-full">
-            <Link to="/emergency" className="flex items-center justify-center gap-2">
+            <Link
+              to="/emergency"
+              className="flex items-center justify-center gap-2"
+            >
               Start Emergency Chat <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
@@ -76,25 +84,24 @@ const Login = () => {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [language, setLanguage] = useState("en");
-  
+  const { login, isLoading: authLoading } = useAuth();
+
   // Handle form submission (mocked for now)
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // Mock login - would integrate with authentication service
-    setTimeout(() => {
-      // Placeholder for future authentication logic
-      setIsLoading(false);
-      // Navigate programmatically after successful login
-      window.location.href = "/dashboard";
-    }, 1500);
+    setError(null);
+
+    try {
+      await login(email, password);
+    } catch (error) {
+      setError("Invalid credentials. Please try again.");
+    }
   };
-  
+
   const handleCreateAccount = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Mock account creation - would integrate with registration service
     setTimeout(() => {
       // Placeholder for future registration logic
@@ -103,11 +110,11 @@ const Login = () => {
       window.location.href = "/dashboard";
     }, 1500);
   };
-  
+
   const handleResetPassword = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Mock password reset - would integrate with password reset service
     setTimeout(() => {
       setIsLoading(false);
@@ -116,7 +123,7 @@ const Login = () => {
       // Show success message or redirect
     }, 1500);
   };
-  
+
   // Get greeting based on time of day
   const getGreeting = () => {
     const hours = new Date().getHours();
@@ -124,12 +131,12 @@ const Login = () => {
     if (hours >= 12 && hours < 17) return "Good Afternoon";
     return "Good Evening";
   };
-  
+
   // Check if login form is valid
   const isLoginFormValid = () => {
     return email.length > 0 && password.length > 0;
   };
-  
+
   // Check if create account form is valid
   const isCreateAccountFormValid = () => {
     return name.length > 0 && email.length > 0 && password.length > 0;
@@ -145,14 +152,17 @@ const Login = () => {
               <Logo />
             </div>
             <h1 className="text-3xl font-bold">Recovery Compass</h1>
-            <p className="text-muted-foreground">Your journey to wellness starts here</p>
+            <p className="text-muted-foreground">
+              Your journey to wellness starts here
+            </p>
           </div>
-          
+
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Reset Password</CardTitle>
               <CardDescription>
-                Enter your email and we'll send you a link to reset your password.
+                Enter your email and we'll send you a link to reset your
+                password.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -163,7 +173,7 @@ const Login = () => {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              
+
               <form onSubmit={handleResetPassword}>
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -181,15 +191,15 @@ const Login = () => {
                       />
                     </div>
                   </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
+
+                  <Button
+                    type="submit"
+                    className="w-full"
                     disabled={forgotEmail.length === 0 || isLoading}
                   >
                     {isLoading ? "Sending..." : "Send Reset Link"}
                   </Button>
-                  
+
                   <Button
                     type="button"
                     variant="outline"
@@ -202,9 +212,10 @@ const Login = () => {
               </form>
             </CardContent>
           </Card>
-          
+
           <div className="mt-8 text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} COCIS, Makerere University. All rights reserved.
+            © {new Date().getFullYear()} COCIS, Makerere University. All rights
+            reserved.
           </div>
         </div>
       </div>
@@ -218,17 +229,21 @@ const Login = () => {
         <div className="max-w-md mx-auto flex flex-col items-center text-center">
           <Logo />
           <h1 className="mt-6 text-4xl font-bold">Recovery Compass</h1>
-          <p className="mt-4 text-xl opacity-90">Your journey to wellness starts here</p>
+          <p className="mt-4 text-xl opacity-90">
+            Your journey to wellness starts here
+          </p>
           <div className="mt-12 bg-white/10 p-6 rounded-lg w-full">
-            <h3 className="text-xl font-medium mb-4">Support When You Need It</h3>
+            <h3 className="text-xl font-medium mb-4">
+              Support When You Need It
+            </h3>
             <p className="text-primary-foreground/90">
-              Recovery Compass provides a safe space for your recovery journey, 
+              Recovery Compass provides a safe space for your recovery journey,
               with tools and support to help you every step of the way.
             </p>
           </div>
         </div>
       </div>
-      
+
       {/* Right side - Forms */}
       <div className="w-full md:w-3/5 p-8 flex flex-col">
         <div className="flex justify-end mb-6">
@@ -237,18 +252,22 @@ const Login = () => {
             <span>{language === "en" ? "English" : "Luganda"}</span>
             <Switch
               checked={language === "lg"}
-              onCheckedChange={() => setLanguage(language === "en" ? "lg" : "en")}
+              onCheckedChange={() =>
+                setLanguage(language === "en" ? "lg" : "en")
+              }
             />
           </div>
         </div>
-        
+
         <div className="max-w-md mx-auto w-full flex-1 flex flex-col">
           {/* Emergency Support */}
           <EmergencySupport />
-          
+
           <h2 className="text-3xl font-bold">{getGreeting()},</h2>
-          <p className="text-xl mt-2 mb-6 text-muted-foreground">Welcome to Recovery Support</p>
-          
+          <p className="text-xl mt-2 mb-6 text-muted-foreground">
+            Welcome to Recovery Support
+          </p>
+
           {error && (
             <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4" />
@@ -256,15 +275,19 @@ const Login = () => {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-2 mb-8">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="register" asChild>
                 <Link to="/register">Create Account</Link>
               </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="login">
               <Card>
                 <CardHeader>
@@ -291,7 +314,7 @@ const Login = () => {
                           />
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <Label htmlFor="password">Password</Label>
@@ -316,15 +339,17 @@ const Login = () => {
                           />
                         </div>
                       </div>
-                      
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
-                        disabled={!isLoginFormValid() || isLoading}
+
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={!isLoginFormValid() || authLoading}
                       >
-                        {isLoading ? "Logging in..." : "Login to Recovery System"}
+                        {authLoading
+                          ? "Logging in..."
+                          : "Login to Recovery System"}
                       </Button>
-                      
+
                       <div className="relative my-4">
                         <div className="absolute inset-0 flex items-center">
                           <Separator className="w-full" />
@@ -335,12 +360,16 @@ const Login = () => {
                           </span>
                         </div>
                       </div>
-                      
-                      <Button type="button" variant="outline" className="w-full">
-                        <img 
-                          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-                          alt="Google logo" 
-                          className="h-5 w-5 mr-2" 
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                      >
+                        <img
+                          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                          alt="Google logo"
+                          className="h-5 w-5 mr-2"
                         />
                         Sign in with Google
                       </Button>
@@ -349,7 +378,7 @@ const Login = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="register">
               <Card>
                 <CardHeader>
@@ -376,7 +405,7 @@ const Login = () => {
                           />
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="register-email">Email</Label>
                         <div className="relative">
@@ -392,7 +421,7 @@ const Login = () => {
                           />
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="register-password">Password</Label>
                         <div className="relative">
@@ -408,21 +437,24 @@ const Login = () => {
                           />
                         </div>
                       </div>
-                      
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
+
+                      <Button
+                        type="submit"
+                        className="w-full"
                         disabled={!isCreateAccountFormValid() || isLoading}
                       >
-                        {isLoading ? "Creating account..." : "Begin Your Recovery Journey"}
+                        {isLoading
+                          ? "Creating account..."
+                          : "Begin Your Recovery Journey"}
                       </Button>
-                      
+
                       <Alert className="mt-4">
                         <AlertDescription>
-                          By creating an account, you agree to our privacy policy. Your information is confidential.
+                          By creating an account, you agree to our privacy
+                          policy. Your information is confidential.
                         </AlertDescription>
                       </Alert>
-                      
+
                       <div className="relative my-4">
                         <div className="absolute inset-0 flex items-center">
                           <Separator className="w-full" />
@@ -433,12 +465,16 @@ const Login = () => {
                           </span>
                         </div>
                       </div>
-                      
-                      <Button type="button" variant="outline" className="w-full">
-                        <img 
-                          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-                          alt="Google logo" 
-                          className="h-5 w-5 mr-2" 
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                      >
+                        <img
+                          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                          alt="Google logo"
+                          className="h-5 w-5 mr-2"
                         />
                         Sign up with Google
                       </Button>
@@ -448,9 +484,9 @@ const Login = () => {
               </Card>
             </TabsContent>
           </Tabs>
-          
+
           <div className="mt-8 text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()}{' '}
+            © {new Date().getFullYear()}{" "}
             <a
               className="underline underline-offset-4 hover:text-primary"
               href="https://cocis.mak.ac.ug"
@@ -467,4 +503,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;
