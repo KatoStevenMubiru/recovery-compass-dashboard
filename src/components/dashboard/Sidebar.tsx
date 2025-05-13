@@ -1,21 +1,22 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { 
-  Home, 
-  BarChart2, 
-  BookOpen, 
-  Calendar, 
+import {
+  Home,
+  BarChart2,
+  BookOpen,
+  Calendar,
   MessageSquare,
-  Settings, 
+  Settings,
   HelpCircle,
   LogOut,
   AlertTriangle,
   FileText,
   Users,
-  Pill
+  Pill,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { icon: Home, label: "Dashboard", path: "/" },
@@ -32,7 +33,6 @@ const navItems = [
 const bottomNavItems = [
   { icon: Settings, label: "Settings", path: "/settings" },
   { icon: HelpCircle, label: "Help", path: "/help" },
-  { icon: LogOut, label: "Logout", path: "/login" },
 ];
 
 interface SidebarProps {
@@ -42,6 +42,7 @@ interface SidebarProps {
 
 export const Sidebar = ({ isMobile, onClose }: SidebarProps) => {
   const location = useLocation();
+  const { logout } = useAuth();
   const currentPath = location.pathname;
 
   const handleClick = () => {
@@ -64,18 +65,18 @@ export const Sidebar = ({ isMobile, onClose }: SidebarProps) => {
       <div className="flex-1 py-8 px-3">
         <nav className="space-y-2">
           {navItems.map((item) => (
-            <Link 
-              key={item.path} 
-              to={item.path}
-              onClick={handleClick}
-            >
+            <Link key={item.path} to={item.path} onClick={handleClick}>
               <Button
                 variant="ghost"
                 className={cn(
                   "w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                  currentPath === item.path && "bg-sidebar-accent text-sidebar-accent-foreground",
-                  item.path === "/emergency" && "mt-2 bg-red-600/20 text-red-600 hover:bg-red-600/30 hover:text-red-700",
-                  currentPath === "/emergency" && item.path === "/emergency" && "bg-red-600/30 text-red-700"
+                  currentPath === item.path &&
+                    "bg-sidebar-accent text-sidebar-accent-foreground",
+                  item.path === "/emergency" &&
+                    "mt-2 bg-red-600/20 text-red-600 hover:bg-red-600/30 hover:text-red-700",
+                  currentPath === "/emergency" &&
+                    item.path === "/emergency" &&
+                    "bg-red-600/30 text-red-700"
                 )}
               >
                 <item.icon className="mr-2 h-5 w-5" />
@@ -89,16 +90,13 @@ export const Sidebar = ({ isMobile, onClose }: SidebarProps) => {
       <div className="py-4 px-3 border-t border-sidebar-border">
         <nav className="space-y-2">
           {bottomNavItems.map((item) => (
-            <Link 
-              key={item.path} 
-              to={item.path}
-              onClick={handleClick}
-            >
+            <Link key={item.path} to={item.path} onClick={handleClick}>
               <Button
                 variant="ghost"
                 className={cn(
                   "w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                  currentPath === item.path && "bg-sidebar-accent text-sidebar-accent-foreground"
+                  currentPath === item.path &&
+                    "bg-sidebar-accent text-sidebar-accent-foreground"
                 )}
               >
                 <item.icon className="mr-2 h-5 w-5" />
@@ -106,6 +104,17 @@ export const Sidebar = ({ isMobile, onClose }: SidebarProps) => {
               </Button>
             </Link>
           ))}
+          <Button
+            variant="ghost"
+            className={cn(
+              "w-full flex items-center gap-2 justify-start px-4 py-2",
+              location.pathname === "/login" && "bg-muted"
+            )}
+            onClick={logout}
+          >
+            <LogOut className="h-5 w-5" />
+            Logout
+          </Button>
         </nav>
       </div>
     </div>
