@@ -137,4 +137,40 @@ export const authService = {
     if (!response.ok) throw new Error("Failed to delete account");
     return response.json();
   },
+
+  async requestPasswordReset(email: string) {
+    const response = await fetch(
+      `${API_URL}api/users/password-reset-request/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      }
+    );
+    if (!response.ok) throw new Error("Failed to request password reset");
+    return response.json();
+  },
+
+  async resetPassword(
+    token: string,
+    new_password: string,
+    confirm_password: string
+  ) {
+    const response = await fetch(`${API_URL}api/users/password-reset/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, new_password, confirm_password }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      console.error("Password reset API error:", data);
+      const message =
+        data.error ||
+        data.confirm_password?.[0] ||
+        data.message ||
+        "Failed to reset password";
+      throw new Error(message);
+    }
+    return data;
+  },
 };

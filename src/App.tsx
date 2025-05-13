@@ -24,6 +24,7 @@ import { SobrietyProvider } from "./contexts/SobrietyContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import VerifyEmail from "./pages/VerifyEmail";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -146,6 +147,10 @@ const App = () => {
                     element={<VerifyEmail />}
                   />
                   <Route path="*" element={<NotFound />} />
+                  <Route
+                    path="/reset-password/:token"
+                    element={<ResetPassword />}
+                  />
                 </Routes>
                 <Toaster />
                 <ChatbotWidget />

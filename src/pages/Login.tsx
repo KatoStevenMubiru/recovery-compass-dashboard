@@ -26,6 +26,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { authService } from "@/services/authService";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock logo - replace with actual logo
 const Logo = () => (
@@ -85,6 +87,7 @@ const Login = () => {
   const [forgotEmail, setForgotEmail] = useState("");
   const [language, setLanguage] = useState("en");
   const { login, isLoading: authLoading } = useAuth();
+  const { toast } = useToast();
 
   // Handle form submission (mocked for now)
   const handleLogin = async (e: React.FormEvent) => {
@@ -111,17 +114,30 @@ const Login = () => {
     }, 1500);
   };
 
-  const handleResetPassword = (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // Mock password reset - would integrate with password reset service
-    setTimeout(() => {
-      setIsLoading(false);
+    setError(null);
+    try {
+      const res = await authService.requestPasswordReset(forgotEmail);
+      toast({
+        title: "Check your email",
+        description: res.message,
+      });
       setIsForgotPassword(false);
-      setError(null);
-      // Show success message or redirect
-    }, 1500);
+      setForgotEmail("");
+    } catch (err) {
+      let message = "Failed to request password reset.";
+      if (err instanceof Error) message = err.message;
+      setError(message);
+      toast({
+        title: "Error",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Get greeting based on time of day
