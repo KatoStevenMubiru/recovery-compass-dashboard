@@ -19,6 +19,8 @@ import Help from "./pages/Help";
 import Appointments from "./pages/Appointments";
 import { useState } from "react";
 import ChatbotWidget from "@/components/ui/ChatbotWidget";
+import { AppointmentsProvider } from "./contexts/AppointmentsContext";
+import { SobrietyProvider } from "./contexts/SobrietyContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,27 +36,31 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Index />} />
-            <Route path="/progress" element={<RecoveryProgress />} />
-            <Route path="/emergency" element={<Emergency />} />
-            <Route path="/daily-reports" element={<DailyReports />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/medication" element={<Medication />} />
-            <Route path="/journal" element={<Journal />} />
-            <Route path="/appointments" element={<Appointments />} />
-            <Route path="/support" element={<NotFound />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="/logout" element={<NotFound />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AppointmentsProvider>
+          <SobrietyProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/" element={<Index />} />
+                <Route path="/progress" element={<RecoveryProgress />} />
+                <Route path="/emergency" element={<Emergency />} />
+                <Route path="/daily-reports" element={<DailyReports />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/medication" element={<Medication />} />
+                <Route path="/journal" element={<Journal />} />
+                <Route path="/appointments" element={<Appointments />} />
+                <Route path="/support" element={<NotFound />} />
+                <Route path="/resources" element={<Resources />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/help" element={<Help />} />
+                <Route path="/logout" element={<NotFound />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </SobrietyProvider>
+        </AppointmentsProvider>
       </TooltipProvider>
       <ChatbotWidget />
     </QueryClientProvider>
