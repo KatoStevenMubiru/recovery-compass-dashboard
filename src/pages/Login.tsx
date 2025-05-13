@@ -87,7 +87,7 @@ const Login = () => {
       // Placeholder for future authentication logic
       setIsLoading(false);
       // Navigate programmatically after successful login
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     }, 1500);
   };
   
@@ -100,7 +100,7 @@ const Login = () => {
       // Placeholder for future registration logic
       setIsLoading(false);
       // Navigate programmatically after successful registration
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     }, 1500);
   };
   
