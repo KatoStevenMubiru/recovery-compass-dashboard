@@ -22,6 +22,7 @@ import ChatbotWidget from "@/components/ui/ChatbotWidget";
 import { AppointmentsProvider } from "./contexts/AppointmentsContext";
 import { SobrietyProvider } from "./contexts/SobrietyContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,21 +44,102 @@ const App = () => {
                 <Routes>
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
-                  <Route path="/dashboard" element={<Index />} />
-                  <Route path="/" element={<Navigate to="/login" replace />} />
-                  <Route path="/progress" element={<RecoveryProgress />} />
-                  <Route path="/emergency" element={<Emergency />} />
-                  <Route path="/daily-reports" element={<DailyReports />} />
-                  <Route path="/community" element={<Community />} />
-                  <Route path="/medication" element={<Medication />} />
-                  <Route path="/journal" element={<Journal />} />
-                  <Route path="/appointments" element={<Appointments />} />
-                  <Route path="/support" element={<NotFound />} />
-                  <Route path="/resources" element={<Resources />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/help" element={<Help />} />
-                  <Route path="/logout" element={<NotFound />} />
-                  <Route path="/profile" element={<Profile />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <Index />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/progress"
+                    element={
+                      <ProtectedRoute>
+                        <RecoveryProgress />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/emergency"
+                    element={
+                      <ProtectedRoute>
+                        <Emergency />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/daily-reports"
+                    element={
+                      <ProtectedRoute>
+                        <DailyReports />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/community"
+                    element={
+                      <ProtectedRoute>
+                        <Community />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/medication"
+                    element={
+                      <ProtectedRoute>
+                        <Medication />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/journal"
+                    element={
+                      <ProtectedRoute>
+                        <Journal />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/appointments"
+                    element={
+                      <ProtectedRoute>
+                        <Appointments />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/resources"
+                    element={
+                      <ProtectedRoute>
+                        <Resources />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/settings"
+                    element={
+                      <ProtectedRoute>
+                        <Settings />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/help"
+                    element={
+                      <ProtectedRoute>
+                        <Help />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <Toaster />
