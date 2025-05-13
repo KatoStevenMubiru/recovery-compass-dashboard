@@ -4,6 +4,7 @@ import {
   RegisterCredentials,
   User,
 } from "@/types/auth";
+import { authFetch } from "./authFetch";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -86,5 +87,54 @@ export const authService = {
       throw new Error(data.error || "Failed to resend verification email");
     }
     return data;
+  },
+
+  async refreshToken(refresh: string): Promise<{ access: string }> {
+    const response = await fetch(`${API_URL}api/users/token/refresh/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to refresh token");
+    }
+    return data;
+  },
+
+  async getProfile() {
+    const response = await authFetch(`${API_URL}api/users/profile/`);
+    if (!response.ok) throw new Error("Failed to fetch profile");
+    return response.json();
+  },
+
+  async updateProfile(data: Partial<User>) {
+    const response = await authFetch(`${API_URL}api/users/profile/`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error("Failed to update profile");
+    return response.json();
+  },
+
+  async updatePassword(current_password: string, new_password: string) {
+    const response = await authFetch(`${API_URL}api/users/profile/`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ current_password, new_password }),
+    });
+    if (!response.ok) throw new Error("Failed to update password");
+    return response.json();
+  },
+
+  async deleteAccount(password: string) {
+    const response = await authFetch(`${API_URL}api/users/profile/`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    if (!response.ok) throw new Error("Failed to delete account");
+    return response.json();
   },
 };
