@@ -1,4 +1,9 @@
-import { AuthResponse, LoginCredentials, User } from "@/types/auth";
+import {
+  AuthResponse,
+  LoginCredentials,
+  RegisterCredentials,
+  User,
+} from "@/types/auth";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -43,5 +48,43 @@ export const authService = {
     localStorage.setItem("access_token", data.access);
     localStorage.setItem("refresh_token", data.refresh);
     localStorage.setItem("user", JSON.stringify(data.user));
+  },
+
+  async register(data: RegisterCredentials): Promise<{ message: string }> {
+    const response = await fetch(`${API_URL}api/users/register/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("Registration error:", error);
+      throw new Error(error.detail || "Registration failed");
+    }
+    return response.json();
+  },
+
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    const response = await fetch(`${API_URL}api/users/verify-email/${token}/`, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Verification failed");
+    }
+    return response.json();
+  },
+
+  async resendVerification(email: string): Promise<{ message: string }> {
+    const response = await fetch(`${API_URL}api/users/resend-verification/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to resend verification email");
+    }
+    return data;
   },
 };

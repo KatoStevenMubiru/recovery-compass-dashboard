@@ -15,3 +15,15 @@ export interface LoginCredentials {
   email: string;
   password: string;
 }
+
+export interface RegisterCredentials {
+  email: string;
+  password: string;
+  password_confirm: string;
+  first_name: string;
+  last_name: string;
+  anonymous_name: string;
+  student_id: string;
+  program: string;
+  emergency_contact: string;
+}

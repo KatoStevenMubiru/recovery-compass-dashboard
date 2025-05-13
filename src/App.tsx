@@ -23,6 +23,7 @@ import { AppointmentsProvider } from "./contexts/AppointmentsContext";
 import { SobrietyProvider } from "./contexts/SobrietyContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import VerifyEmail from "./pages/VerifyEmail";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -139,6 +140,10 @@ const App = () => {
                         <Profile />
                       </ProtectedRoute>
                     }
+                  />
+                  <Route
+                    path="/verify-email/:token"
+                    element={<VerifyEmail />}
                   />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
