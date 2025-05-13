@@ -11,43 +11,50 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CheckCircle, Calendar as CalendarIcon, Activity, BadgeAlert, LineChart, Stars, BookOpen, PenLine, Goal, PlusCircle, AlertTriangle, Pill } from "lucide-react";
-import { userProfile } from "@/services/mockData";
 import { useToast } from "@/hooks/use-toast";
-
-const mockData = {
-  daysInRecovery: 45,
-  recoveryStatus: "active",
-  nextCheckIn: "2025-04-18",
-  medicationAdherence: 85,
-  academicImpact: 72,
-  weeklyMoodTrend: [6, 7, 5, 8, 6, 7, 8],
-  riskScore: 28,
-  goalsCompleted: 7,
-  goalsTotal: 10,
-  recommendations: [
-    "Schedule two study sessions with your academic advisor",
-    "Increase sleep hygiene by maintaining a consistent bedtime",
-    "Consider joining the Wednesday support group for additional community support"
-  ],
-  riskFactors: ["Recent academic stress", "Changes in social environment"],
-  protectiveFactors: ["Strong support system", "Consistent medication adherence", "Regular therapy attendance"]
-};
+import { useSobriety } from "@/contexts/SobrietyContext";
+import { format } from "date-fns";
 
 const RecoveryProgress = () => {
   const { toast } = useToast();
+  const { 
+    soberDate, 
+    daysInRecovery, 
+    updateSoberDate,
+    isSoberDateSet 
+  } = useSobriety();
+
+  const [selectedSoberDate, setSelectedSoberDate] = useState<Date | undefined>(soberDate || undefined);
+  const [isSoberDateDialogOpen, setIsSoberDateDialogOpen] = useState(false);
+
   const [mood, setMood] = useState(5);
+  const [cravings, setCravings] = useState(5);
   const [journal, setJournal] = useState("");
   const [goal, setGoal] = useState("");
   const [medicationTaken, setMedicationTaken] = useState("");
   const [moodNotes, setMoodNotes] = useState("");
   const [showDetails, setShowDetails] = useState(false);
   
-  const handleMoodSubmit = () => {
+  const handleSoberDateSave = () => {
+    if (selectedSoberDate) {
+      updateSoberDate(selectedSoberDate);
+      setIsSoberDateDialogOpen(false);
+    } else {
+      toast({
+        title: "No Date Selected",
+        description: "Please select a date to update your sober date.",
+        variant: "warning"
+      });
+    }
+  };
+
+  const handleMoodAndCravingsSubmit = () => {
     toast({
-      title: "Mood recorded",
-      description: `Your mood (${mood}/10) has been saved.`,
+      title: "Mood & Cravings Recorded",
+      description: `Your mood (${mood}/10) and cravings (${cravings}/10) have been saved.`,
     });
     setMood(5);
+    setCravings(5);
     setMoodNotes("");
   };
 
@@ -133,50 +140,60 @@ const RecoveryProgress = () => {
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle className="text-xl">Sobriety Tracker</CardTitle>
-              <Dialog>
+              <Dialog open={isSoberDateDialogOpen} onOpenChange={setIsSoberDateDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm" variant="outline">Update Sober Date</Button>
+                  <Button size="sm" variant="outline" onClick={() => setSelectedSoberDate(soberDate || new Date())}>
+                    {isSoberDateSet ? "Update Sober Date" : "Set Sober Date"}
+                  </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Set Your Sober Date</DialogTitle>
                     <DialogDescription>
-                      Select the date you began your sobriety journey
+                      Select the date you began your sobriety journey. This can be updated anytime.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="py-4 flex justify-center">
                     <Calendar
                       mode="single"
-                      selected={new Date(Date.now() - (mockData.daysInRecovery * 24 * 60 * 60 * 1000))}
-                      onSelect={() => {}}
-                      disabled={(date) => date > new Date()}
-                      className="pointer-events-auto"
+                      selected={selectedSoberDate}
+                      onSelect={setSelectedSoberDate}
+                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                      initialFocus={!selectedSoberDate}
+                      defaultMonth={selectedSoberDate || new Date()}
                     />
                   </div>
                   <DialogFooter>
-                    <Button onClick={() => toast({
-                      title: "Sober date updated",
-                      description: "Your sobriety date has been updated successfully."
-                    })}>Save Changes</Button>
+                    <Button variant="ghost" onClick={() => setIsSoberDateDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleSoberDateSave}>Save Changes</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold mb-2 flex items-baseline">
-              {mockData.daysInRecovery} <span className="text-sm font-normal ml-1 text-muted-foreground">days</span>
-            </div>
-            <div className="text-muted-foreground mb-4 text-sm">
-              Sober since: {new Date(Date.now() - (mockData.daysInRecovery * 24 * 60 * 60 * 1000)).toLocaleDateString()}
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Progress to next milestone</span>
-                <span>{mockData.daysInRecovery % 30}/30 days ({Math.round((mockData.daysInRecovery % 30) / 30 * 100)}%)</span>
+            {isSoberDateSet && soberDate ? (
+              <>
+                <div className="text-4xl font-bold mb-2 flex items-baseline">
+                  {daysInRecovery} <span className="text-sm font-normal ml-1 text-muted-foreground">days</span>
+                </div>
+                <div className="text-muted-foreground mb-4 text-sm">
+                  Sober since: {format(soberDate, "MMMM d, yyyy")}
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Progress to next milestone (30 days)</span>
+                    <span>{daysInRecovery % 30}/30 days ({Math.round((daysInRecovery % 30) / 30 * 100)}%)</span>
+                  </div>
+                  <Progress value={(daysInRecovery % 30) / 30 * 100} />
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground mb-2">Your sober date is not set.</p>
+                <Button onClick={() => { setSelectedSoberDate(new Date()); setIsSoberDateDialogOpen(true); }}>Set Sober Date</Button>
               </div>
-              <Progress value={(mockData.daysInRecovery % 30) / 30 * 100} />
-            </div>
+            )}
           </CardContent>
         </Card>
         
@@ -189,7 +206,7 @@ const RecoveryProgress = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{mockData.daysInRecovery}</div>
+              <div className="text-3xl font-bold">{daysInRecovery}</div>
             </CardContent>
           </Card>
 
@@ -201,7 +218,7 @@ const RecoveryProgress = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold capitalize">{mockData.recoveryStatus}</div>
+              <div className="text-3xl font-bold capitalize">active</div>
             </CardContent>
           </Card>
 
@@ -213,7 +230,7 @@ const RecoveryProgress = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{new Date(mockData.nextCheckIn).toLocaleDateString()}</div>
+              <div className="text-3xl font-bold">{new Date("2025-04-18").toLocaleDateString()}</div>
             </CardContent>
           </Card>
         </div>
@@ -222,10 +239,12 @@ const RecoveryProgress = () => {
           <Card className="gradient-card border-0 shadow-md">
             <CardHeader>
               <CardTitle className="text-lg">How are you feeling today?</CardTitle>
-              <CardDescription>Rate your mood on a scale of 1-10</CardDescription>
+              <CardDescription>Rate your mood and cravings on a scale of 1-10.</CardDescription>
+              <CardDescription className="text-xs text-muted-foreground pt-1">Mood is categorized numerically, where 1 represents a very low mood and 10 represents a very high mood. Apply the same scale for cravings.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
+                <Label className="text-sm font-medium">Mood (1-10)</Label>
                 <Slider
                   value={[mood]}
                   min={1}
@@ -234,18 +253,32 @@ const RecoveryProgress = () => {
                   onValueChange={(value) => setMood(value[0])}
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Very Low</span>
-                  <span>Very High</span>
+                  <span>1</span>
+                  <span>10</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Cravings (1-10)</Label>
+                <Slider
+                  value={[cravings]}
+                  min={1}
+                  max={10}
+                  step={1}
+                  onValueChange={(value) => setCravings(value[0])}
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>1 (Low)</span>
+                  <span>10 (High)</span>
                 </div>
               </div>
               <Textarea
-                placeholder="Notes about your mood (optional)"
+                placeholder="Notes about your mood & cravings (optional)"
                 value={moodNotes}
                 onChange={(e) => setMoodNotes(e.target.value)}
                 className="resize-none"
               />
-              <Button className="w-full" onClick={handleMoodSubmit}>
-                Save Mood
+              <Button className="w-full" onClick={handleMoodAndCravingsSubmit}>
+                Save Mood & Cravings
               </Button>
             </CardContent>
           </Card>
@@ -302,9 +335,9 @@ const RecoveryProgress = () => {
               <div className="mt-4 pt-4 border-t">
                 <div className="flex justify-between text-sm mb-2">
                   <span>Monthly Adherence Rate</span>
-                  <span>{mockData.medicationAdherence}%</span>
+                  <span>85%</span>
                 </div>
-                <Progress value={mockData.medicationAdherence} />
+                <Progress value={85} />
               </div>
             </CardContent>
           </Card>
@@ -331,10 +364,10 @@ const RecoveryProgress = () => {
               <div className="pt-4 border-t">
                 <div className="flex justify-between text-sm mb-2">
                   <span>Goal Progress</span>
-                  <span>{mockData.goalsCompleted} / {mockData.goalsTotal} completed</span>
+                  <span>7 / 10 completed</span>
                 </div>
                 <Progress 
-                  value={(mockData.goalsCompleted / mockData.goalsTotal) * 100}
+                  value={(7 / 10) * 100}
                 />
               </div>
             </CardContent>
@@ -350,14 +383,14 @@ const RecoveryProgress = () => {
             <div className="mb-6">
               <div className="flex items-center">
                 <div className="grow">
-                  <Progress value={mockData.academicImpact} />
+                  <Progress value={72} />
                 </div>
                 <div className="ml-4 min-w-16 text-2xl font-bold">
-                  {mockData.academicImpact}%
+                  72%
                 </div>
               </div>
               <p className="mt-2 text-sm">
-                {getAcademicPerformanceLabel(mockData.academicImpact)}
+                {getAcademicPerformanceLabel(72)}
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
                 This score reflects how your recovery activities are impacting your academic performance. 
@@ -384,23 +417,23 @@ const RecoveryProgress = () => {
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <AlertTriangle className={`h-5 w-5 ${mockData.riskScore < 30 ? "text-green-500" : mockData.riskScore < 60 ? "text-amber-500" : "text-red-500"}`} />
+                  <AlertTriangle className={`h-5 w-5 ${28 < 30 ? "text-green-500" : 28 < 60 ? "text-amber-500" : "text-red-500"}`} />
                   <span className="font-medium">Relapse Risk Score</span>
                 </div>
-                <div className="text-lg font-bold">{mockData.riskScore}%</div>
+                <div className="text-lg font-bold">28%</div>
               </div>
               <Progress 
-                value={mockData.riskScore}
+                value={28}
               />
               <div className="mt-1 text-sm text-right text-muted-foreground">
-                {getRiskLevelLabel(mockData.riskScore)}
+                {getRiskLevelLabel(28)}
               </div>
             </div>
 
             <div>
               <h4 className="font-medium mb-2">Personalized Recommendations:</h4>
               <ul className="list-disc pl-5 space-y-1">
-                {mockData.recommendations.map((rec, i) => (
+                {["Schedule two study sessions with your academic advisor", "Increase sleep hygiene by maintaining a consistent bedtime", "Consider joining the Wednesday support group for additional community support"].map((rec, i) => (
                   <li key={i} className="text-sm">{rec}</li>
                 ))}
               </ul>
@@ -411,7 +444,7 @@ const RecoveryProgress = () => {
                 <div>
                   <h4 className="font-medium mb-2">Risk Factors:</h4>
                   <ul className="list-disc pl-5 space-y-1">
-                    {mockData.riskFactors.map((factor, i) => (
+                    {["Recent academic stress", "Changes in social environment"].map((factor, i) => (
                       <li key={i} className="text-sm">{factor}</li>
                     ))}
                   </ul>
@@ -420,7 +453,7 @@ const RecoveryProgress = () => {
                 <div>
                   <h4 className="font-medium mb-2">Protective Factors:</h4>
                   <ul className="list-disc pl-5 space-y-1">
-                    {mockData.protectiveFactors.map((factor, i) => (
+                    {["Strong support system", "Consistent medication adherence", "Regular therapy attendance"].map((factor, i) => (
                       <li key={i} className="text-sm">{factor}</li>
                     ))}
                   </ul>
@@ -429,7 +462,7 @@ const RecoveryProgress = () => {
                 <div>
                   <h4 className="font-medium mb-2">Weekly Mood Trends:</h4>
                   <div className="h-32 flex items-end gap-2">
-                    {mockData.weeklyMoodTrend.map((val, i) => (
+                    {[6, 7, 5, 8, 6, 7, 8].map((val, i) => (
                       <div key={i} className="flex-1 flex flex-col items-center gap-1">
                         <div 
                           className="w-full bg-primary/70 rounded-t"
