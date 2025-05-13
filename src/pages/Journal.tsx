@@ -3,6 +3,9 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { journalEntries as initialEntries } from "@/services/mockData";
 import { format } from "date-fns";
 import { BookOpen, Calendar, Edit, PenTool, Trash2 } from "lucide-react";
@@ -46,7 +49,7 @@ const Journal = () => {
     <DashboardLayout pageTitle="Journal">
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold mb-2">Recovery Journal</h2>
+          <h2 className="text-2xl font-bold mb-2 text-primary">Recovery Journal</h2>
           <p className="text-muted-foreground">
             Track your recovery journey and reflect on your progress.
           </p>
@@ -70,13 +73,13 @@ const Journal = () => {
                 <p className="text-muted-foreground text-center">No journal entries yet.</p>
               )}
               {entries.map((entry) => (
-                <Card key={entry.id} className="border-0 shadow-md">
+                <Card key={entry.id} className="gradient-card border-0 shadow-md">
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
                       <div>
-                        <CardTitle>{entry.title}</CardTitle>
-                        <CardDescription>
-                          <Calendar className="h-4 w-4 inline-block mr-1" />
+                        <CardTitle className="text-lg text-primary">{entry.title}</CardTitle>
+                        <CardDescription className="flex items-center">
+                          <Calendar className="h-4 w-4 inline-block mr-1 text-muted-foreground" />
                           {format(new Date(entry.date), "MMMM d, yyyy")}
                         </CardDescription>
                       </div>
@@ -85,7 +88,7 @@ const Journal = () => {
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                         <Button variant="ghost" size="icon" disabled title="Edit (coming soon)">
-                          <Edit className="h-4 w-4" />
+                          <Edit className="h-4 w-4 text-muted-foreground" />
                         </Button>
                       </div>
                     </div>
@@ -103,50 +106,54 @@ const Journal = () => {
           </TabsContent>
 
           <TabsContent value="new">
-            <Card className="border-0 shadow-md">
-              <CardHeader>
-                <CardTitle>Create New Entry</CardTitle>
+            <Card className="gradient-card border-0 shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-primary flex items-center gap-2">
+                  <PenTool className="h-5 w-5 text-primary" />
+                  Create New Entry
+                </CardTitle>
                 <CardDescription>
                   Write about your thoughts, feelings, and experiences.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form className="space-y-4" onSubmit={handleAddEntry}>
-                  <div>
-                    <label className="block text-sm font-medium mb-1" htmlFor="title">Title</label>
-                    <input
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Title</Label>
+                    <Input
                       id="title"
                       name="title"
                       type="text"
-                      className="input input-bordered w-full"
                       value={newEntry.title}
                       onChange={handleInputChange}
                       required
+                      placeholder="Entry title"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1" htmlFor="content">Content</label>
-                    <textarea
+                  <div className="space-y-2">
+                    <Label htmlFor="content">Content</Label>
+                    <Textarea
                       id="content"
                       name="content"
-                      className="input input-bordered w-full min-h-[100px]"
+                      className="min-h-[150px]"
                       value={newEntry.content}
                       onChange={handleInputChange}
                       required
+                      placeholder="Write your thoughts here..."
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1" htmlFor="mood">Mood (1-10)</label>
-                    <input
+                  <div className="space-y-2">
+                    <Label htmlFor="mood">Mood (1-10)</Label>
+                    <Input
                       id="mood"
                       name="mood"
                       type="number"
                       min="1"
                       max="10"
-                      className="input input-bordered w-full"
                       value={newEntry.mood}
                       onChange={handleInputChange}
                       required
+                      placeholder="Rate your mood from 1-10"
                     />
                   </div>
                   <Button type="submit" className="w-full">Add Entry</Button>
