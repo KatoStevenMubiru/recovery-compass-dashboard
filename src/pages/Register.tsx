@@ -40,7 +40,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Toast } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 
-// Mock logo component
+// Logo component matching dashboard style
 const Logo = () => (
   <div className="bg-primary rounded-full w-16 h-16 flex items-center justify-center">
     <span className="text-primary-foreground text-2xl font-bold">RC</span>
@@ -163,7 +163,7 @@ const Register = () => {
           <h1 className="text-4xl font-bold text-white mt-6">Recovery Compass</h1>
           <p className="text-xl text-white/80 mt-4">Join our supportive community on your journey to wellness</p>
           
-          <div className="mt-12 bg-white/10 p-6 rounded-lg text-left">
+          <div className="mt-12 bg-white/10 p-6 rounded-lg text-left shadow-md">
             <h3 className="text-xl font-medium mb-4 text-white">Why Join Recovery Compass?</h3>
             <ul className="space-y-3 text-white/90">
               <li className="flex items-start">
@@ -199,8 +199,8 @@ const Register = () => {
             </Button>
             
             <div className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              <span>{language === "en" ? "English" : "Luganda"}</span>
+              <Globe className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm">{language === "en" ? "English" : "Luganda"}</span>
               <Switch
                 checked={language === "lg"}
                 onCheckedChange={() => setLanguage(language === "en" ? "lg" : "en")}
@@ -209,7 +209,7 @@ const Register = () => {
           </div>
           
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold">Create Your Account</h1>
+            <h1 className="text-3xl font-bold text-primary">Create Your Account</h1>
             <p className="text-muted-foreground mt-2">Join our recovery community at CoCIS</p>
           </div>
           
@@ -223,220 +223,226 @@ const Register = () => {
           
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Personal Information Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                <User className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold">Personal Information</h2>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
+            <Card className="gradient-card border-0 shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-primary flex items-center gap-2">
+                  <User className="h-5 w-5 text-primary" />
+                  Personal Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName" className={errors.firstName ? "text-destructive" : ""}>
+                      First Name
+                    </Label>
+                    <Input
+                      id="firstName"
+                      value={form.firstName}
+                      onChange={(e) => handleChange("firstName", e.target.value)}
+                      className={errors.firstName ? "border-destructive" : ""}
+                      placeholder="Enter your first name"
+                    />
+                    {errors.firstName && (
+                      <p className="text-sm text-destructive">{errors.firstName}</p>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName" className={errors.lastName ? "text-destructive" : ""}>
+                      Last Name
+                    </Label>
+                    <Input
+                      id="lastName"
+                      value={form.lastName}
+                      onChange={(e) => handleChange("lastName", e.target.value)}
+                      className={errors.lastName ? "border-destructive" : ""}
+                      placeholder="Enter your last name"
+                    />
+                    {errors.lastName && (
+                      <p className="text-sm text-destructive">{errors.lastName}</p>
+                    )}
+                  </div>
+                </div>
+                
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className={errors.firstName ? "text-destructive" : ""}>
-                    First Name
+                  <Label htmlFor="email" className={errors.email ? "text-destructive" : ""}>
+                    Email Address
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => handleChange("email", e.target.value)}
+                      className={`pl-10 ${errors.email ? "border-destructive" : ""}`}
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                  {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="anonymousName" className={errors.anonymousName ? "text-destructive" : ""}>
+                    Anonymous Forum Name
+                  </Label>
+                  <div className="relative">
+                    <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="anonymousName"
+                      value={form.anonymousName}
+                      onChange={(e) => handleChange("anonymousName", e.target.value)}
+                      className={`pl-10 ${errors.anonymousName ? "border-destructive" : ""}`}
+                      placeholder="Enter a display name for the community forum"
+                    />
+                  </div>
+                  {errors.anonymousName && (
+                    <p className="text-sm text-destructive">{errors.anonymousName}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground">
+                    This name will be shown in the community forum to protect your privacy
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Academic Information Section */}
+            <Card className="gradient-card border-0 shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-primary flex items-center gap-2">
+                  <School className="h-5 w-5 text-primary" />
+                  Academic Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="studentId" className={errors.studentId ? "text-destructive" : ""}>
+                    Student ID
                   </Label>
                   <Input
-                    id="firstName"
-                    value={form.firstName}
-                    onChange={(e) => handleChange("firstName", e.target.value)}
-                    className={errors.firstName ? "border-destructive" : ""}
-                    placeholder="Enter your first name"
+                    id="studentId"
+                    value={form.studentId}
+                    onChange={(e) => handleChange("studentId", e.target.value)}
+                    className={errors.studentId ? "border-destructive" : ""}
+                    placeholder="Enter your student ID"
                   />
-                  {errors.firstName && (
-                    <p className="text-sm text-destructive">{errors.firstName}</p>
+                  {errors.studentId && (
+                    <p className="text-sm text-destructive">{errors.studentId}</p>
                   )}
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className={errors.lastName ? "text-destructive" : ""}>
-                    Last Name
+                  <Label htmlFor="program" className={errors.program ? "text-destructive" : ""}>
+                    Program
                   </Label>
-                  <Input
-                    id="lastName"
-                    value={form.lastName}
-                    onChange={(e) => handleChange("lastName", e.target.value)}
-                    className={errors.lastName ? "border-destructive" : ""}
-                    placeholder="Enter your last name"
-                  />
-                  {errors.lastName && (
-                    <p className="text-sm text-destructive">{errors.lastName}</p>
+                  <Select
+                    value={form.program}
+                    onValueChange={(value) => handleChange("program", value)}
+                  >
+                    <SelectTrigger className={errors.program ? "border-destructive" : ""}>
+                      <SelectValue placeholder="Select your program" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Academic Programs</SelectLabel>
+                        {programs.map((program) => (
+                          <SelectItem key={program} value={program}>
+                            {program}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {errors.program && (
+                    <p className="text-sm text-destructive">{errors.program}</p>
                   )}
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="email" className={errors.email ? "text-destructive" : ""}>
-                  Email Address
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    className={`pl-10 ${errors.email ? "border-destructive" : ""}`}
-                    placeholder="you@example.com"
-                  />
-                </div>
-                {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="anonymousName" className={errors.anonymousName ? "text-destructive" : ""}>
-                  Anonymous Forum Name
-                </Label>
-                <div className="relative">
-                  <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="anonymousName"
-                    value={form.anonymousName}
-                    onChange={(e) => handleChange("anonymousName", e.target.value)}
-                    className={`pl-10 ${errors.anonymousName ? "border-destructive" : ""}`}
-                    placeholder="Enter a display name for the community forum"
-                  />
-                </div>
-                {errors.anonymousName && (
-                  <p className="text-sm text-destructive">{errors.anonymousName}</p>
-                )}
-                <p className="text-sm text-muted-foreground">
-                  This name will be shown in the community forum to protect your privacy
-                </p>
-              </div>
-            </div>
-            
-            <Separator />
-            
-            {/* Academic Information Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                <School className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold">Academic Information</h2>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="studentId" className={errors.studentId ? "text-destructive" : ""}>
-                  Student ID
-                </Label>
-                <Input
-                  id="studentId"
-                  value={form.studentId}
-                  onChange={(e) => handleChange("studentId", e.target.value)}
-                  className={errors.studentId ? "border-destructive" : ""}
-                  placeholder="Enter your student ID"
-                />
-                {errors.studentId && (
-                  <p className="text-sm text-destructive">{errors.studentId}</p>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="program" className={errors.program ? "text-destructive" : ""}>
-                  Program
-                </Label>
-                <Select
-                  value={form.program}
-                  onValueChange={(value) => handleChange("program", value)}
-                >
-                  <SelectTrigger className={errors.program ? "border-destructive" : ""}>
-                    <SelectValue placeholder="Select your program" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Academic Programs</SelectLabel>
-                      {programs.map((program) => (
-                        <SelectItem key={program} value={program}>
-                          {program}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                {errors.program && (
-                  <p className="text-sm text-destructive">{errors.program}</p>
-                )}
-              </div>
-            </div>
-            
-            <Separator />
+              </CardContent>
+            </Card>
             
             {/* Security Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Lock className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold">Security</h2>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password" className={errors.password ? "text-destructive" : ""}>
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    value={form.password}
-                    onChange={(e) => handleChange("password", e.target.value)}
-                    className={`pl-10 ${errors.password ? "border-destructive" : ""}`}
-                    placeholder="Create a password (min. 8 characters)"
-                  />
+            <Card className="gradient-card border-0 shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-primary flex items-center gap-2">
+                  <Lock className="h-5 w-5 text-primary" />
+                  Security
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password" className={errors.password ? "text-destructive" : ""}>
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type="password"
+                      value={form.password}
+                      onChange={(e) => handleChange("password", e.target.value)}
+                      className={`pl-10 ${errors.password ? "border-destructive" : ""}`}
+                      placeholder="Create a password (min. 8 characters)"
+                    />
+                  </div>
+                  {errors.password && (
+                    <p className="text-sm text-destructive">{errors.password}</p>
+                  )}
                 </div>
-                {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className={errors.confirmPassword ? "text-destructive" : ""}>
-                  Confirm Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={form.confirmPassword}
-                    onChange={(e) => handleChange("confirmPassword", e.target.value)}
-                    className={`pl-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
-                    placeholder="Confirm your password"
-                  />
+                
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className={errors.confirmPassword ? "text-destructive" : ""}>
+                    Confirm Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={form.confirmPassword}
+                      onChange={(e) => handleChange("confirmPassword", e.target.value)}
+                      className={`pl-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
+                      placeholder="Confirm your password"
+                    />
+                  </div>
+                  {errors.confirmPassword && (
+                    <p className="text-sm text-destructive">{errors.confirmPassword}</p>
+                  )}
                 </div>
-                {errors.confirmPassword && (
-                  <p className="text-sm text-destructive">{errors.confirmPassword}</p>
-                )}
-              </div>
-            </div>
-            
-            <Separator />
+              </CardContent>
+            </Card>
             
             {/* Emergency Contact */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Phone className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold">Emergency Contact</h2>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="emergencyContact">
-                  Emergency Contact Number
-                </Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="emergencyContact"
-                    value={form.emergencyContact}
-                    onChange={(e) => handleChange("emergencyContact", e.target.value)}
-                    className="pl-10"
-                    placeholder="Emergency contact phone number"
-                  />
+            <Card className="gradient-card border-0 shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-primary flex items-center gap-2">
+                  <Phone className="h-5 w-5 text-primary" />
+                  Emergency Contact
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyContact">
+                    Emergency Contact Number
+                  </Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="emergencyContact"
+                      value={form.emergencyContact}
+                      onChange={(e) => handleChange("emergencyContact", e.target.value)}
+                      className="pl-10"
+                      placeholder="Emergency contact phone number"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    This number will only be used in case of emergency
+                  </p>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  This number will only be used in case of emergency
-                </p>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
             
             {/* Submit Button */}
             <Button 
