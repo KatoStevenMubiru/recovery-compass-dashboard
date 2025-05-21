@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { authService } from "@/services/authService";
+import { useToast } from "@/components/ui/use-toast";
+import authService from "@/services/authService";
 
 export function useProfile() {
   return useQuery({

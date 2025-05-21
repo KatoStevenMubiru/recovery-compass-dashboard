@@ -6,8 +6,8 @@ import React, {
   useEffect,
 } from "react";
 import { User } from "@/types/auth";
-import { authService } from "@/services/authService";
-import { useToast } from "@/hooks/use-toast";
+import authService from "@/services/authService";
+import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
@@ -18,7 +18,9 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,

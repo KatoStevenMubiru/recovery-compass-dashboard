@@ -26,8 +26,9 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { authService } from "@/services/authService";
-import { useToast } from "@/hooks/use-toast";
+import { Button as UIButton } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import authService from "@/services/authService";
 
 // Mock logo - replace with actual logo
 const Logo = () => (

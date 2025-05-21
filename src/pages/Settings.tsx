@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { authService } from "@/services/authService";
+import authService from "@/services/authService";
 import {
   AlertDialog,
   AlertDialogAction,

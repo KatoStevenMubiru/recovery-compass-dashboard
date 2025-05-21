@@ -40,7 +40,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Toast } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { authService } from "@/services/authService";
+import authService from "@/services/authService";
 
 // Logo component matching dashboard style
 const Logo = () => (

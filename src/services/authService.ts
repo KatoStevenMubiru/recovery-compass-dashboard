@@ -8,7 +8,7 @@ import { authFetch } from "./authFetch";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-export const authService = {
+const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     console.log("API_URL", API_URL);
     const response = await fetch(`${API_URL}api/users/login/`, {
@@ -173,4 +173,67 @@ export const authService = {
     }
     return data;
   },
+
+  authFetch: async (url: string, options: RequestInit = {}) => {
+    const accessToken = authService.getAccessToken();
+    const refreshToken = authService.getRefreshToken();
+
+    if (!accessToken) {
+      throw new Error("No access token available");
+    }
+
+    const headers = {
+      ...options.headers,
+      Authorization: `Bearer ${accessToken}`,
+    };
+
+    try {
+      const response = await fetch(url, { ...options, headers });
+
+      // If we get a 401 and have a refresh token, try to refresh
+      if (response.status === 401 && refreshToken) {
+        try {
+          // Attempt to refresh the token using the correct endpoint
+          const refreshResponse = await fetch(
+            `${API_URL}api/users/token/refresh/`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ refresh: refreshToken }),
+            }
+          );
+
+          if (refreshResponse.ok) {
+            const data = await refreshResponse.json();
+            // Store the new access token
+            localStorage.setItem("access_token", data.access);
+
+            // Retry the original request with the new access token
+            const newHeaders = {
+              ...options.headers,
+              Authorization: `Bearer ${data.access}`,
+            };
+            return fetch(url, { ...options, headers: newHeaders });
+          } else {
+            // If refresh fails, clear tokens and throw error
+            authService.logout();
+            throw new Error("Session expired. Please log in again.");
+          }
+        } catch (refreshError) {
+          // If refresh fails, clear tokens and throw error
+          authService.logout();
+          throw new Error("Session expired. Please log in again.");
+        }
+      }
+
+      return response;
+    } catch (error) {
+      console.error("API request failed:", error);
+      throw error;
+    }
+  },
 };
+
+export default authService;

@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { authService } from "@/services/authService";
+import authService from "@/services/authService";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export function useRequestPasswordReset() {
   return useMutation({
