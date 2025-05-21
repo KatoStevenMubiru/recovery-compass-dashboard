@@ -43,6 +43,26 @@ interface RiskScore {
   detail?: string;
 }
 
+interface DailyReport {
+  id: number;
+  date: string;
+  mood: number | null;
+  cravings: number | null;
+  mood_notes: string | null;
+  academic_impact: number | null;
+  journal_entry: string | null;
+  medication_taken: boolean | null;
+  risk_score: number;
+  days_sober: number | null;
+  days_in_recovery: number | null;
+  relapse_count: number | null;
+  last_relapse_date: string | null;
+  sober_date: string | null;
+  goals_completed: number;
+  total_goals: number;
+  goals_progress: number;
+}
+
 export const recoveryService = {
   // Daily Check-in
   async getDailyCheckIn(token: string): Promise<DailyCheckIn> {
@@ -260,6 +280,21 @@ export const recoveryService = {
       },
     });
     if (!response.ok) throw new Error("Failed to fetch risk score");
+    return response.json();
+  },
+
+  // Daily Report
+  async getDailyReport(token: string, date?: string): Promise<DailyReport> {
+    const url = date
+      ? `${API_URL}api/recovery/daily-report/?date=${date}`
+      : `${API_URL}api/recovery/daily-report/`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error("Failed to fetch daily report");
     return response.json();
   },
 };

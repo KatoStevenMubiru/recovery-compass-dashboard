@@ -167,3 +167,12 @@ export function useRiskScore() {
     queryFn: () => recoveryService.getRiskScore(authService.getAccessToken()),
   });
 }
+
+// Daily Report
+export function useDailyReport(date?: string) {
+  return useQuery({
+    queryKey: ["daily-report", date],
+    queryFn: () =>
+      recoveryService.getDailyReport(authService.getAccessToken(), date),
+  });
+}
