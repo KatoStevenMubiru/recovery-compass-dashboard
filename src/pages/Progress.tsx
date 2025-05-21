@@ -64,6 +64,8 @@ import {
   useGoalProgress,
   useRiskScore,
 } from "@/hooks/useRecovery";
+import { useMedications, useMedicationAdherence } from "@/hooks/useMedication";
+import { useNavigate } from "react-router-dom";
 
 const RecoveryProgress = () => {
   const { toast } = useToast();
@@ -78,7 +80,6 @@ const RecoveryProgress = () => {
   const [cravings, setCravings] = useState(5);
   const [journal, setJournal] = useState("");
   const [goal, setGoal] = useState("");
-  const [medicationTaken, setMedicationTaken] = useState("");
   const [moodNotes, setMoodNotes] = useState("");
   const [showDetails, setShowDetails] = useState(false);
 
@@ -118,6 +119,15 @@ const RecoveryProgress = () => {
 
   // First, add a new state for academic impact
   const [academicImpact, setAcademicImpact] = useState(50); // Default to 50%
+
+  const { medications, isLoading: medicationsLoading } = useMedications();
+  const {
+    todayAdherence,
+    isLoadingToday: adherenceLoading,
+    logAdherence,
+  } = useMedicationAdherence();
+
+  const navigate = useNavigate();
 
   const handleSoberDateSave = () => {
     if (!selectedSoberDate) {
@@ -306,62 +316,6 @@ const RecoveryProgress = () => {
             variant: "destructive",
           });
           console.error("Create journal error:", error);
-        },
-      });
-    }
-  };
-
-  const handleMedicationSubmit = () => {
-    if (!medicationTaken) {
-      toast({
-        title: "Selection required",
-        description: "Please select whether you took your medication.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const data = { taken: medicationTaken === "yes" };
-
-    if (medication) {
-      updateMedication(data, {
-        onSuccess: () => {
-          toast({
-            title: "Medication updated",
-            description: data.taken
-              ? "You've successfully updated that you took your medication."
-              : "You've updated that you missed your medication. Remember to follow your treatment plan.",
-          });
-          setMedicationTaken("");
-        },
-        onError: (error) => {
-          toast({
-            title: "Error",
-            description:
-              "Failed to update medication record. Please try again.",
-            variant: "destructive",
-          });
-          console.error("Update medication error:", error);
-        },
-      });
-    } else {
-      createMedication(data, {
-        onSuccess: () => {
-          toast({
-            title: "Medication logged",
-            description: data.taken
-              ? "You've successfully logged that you took your medication."
-              : "You've logged that you missed your medication. Remember to follow your treatment plan.",
-          });
-          setMedicationTaken("");
-        },
-        onError: (error) => {
-          toast({
-            title: "Error",
-            description: "Failed to log medication. Please try again.",
-            variant: "destructive",
-          });
-          console.error("Create medication error:", error);
         },
       });
     }
@@ -716,42 +670,83 @@ const RecoveryProgress = () => {
                 <Pill className="h-4 w-4" />
                 Medication Adherence
               </CardTitle>
-              <CardDescription>Log your daily medication</CardDescription>
+              <CardDescription>Track your medication adherence</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="mb-4">
-                <Label className="text-base mb-2 block">
-                  Did you take your medication today?
-                </Label>
-                <RadioGroup
-                  value={medicationTaken}
-                  onValueChange={setMedicationTaken}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="yes" />
-                    <Label htmlFor="yes">Yes</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="no" />
-                    <Label htmlFor="no">No</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-              <Button
-                className="w-full"
-                onClick={handleMedicationSubmit}
-                disabled={medicationLoading}
-              >
-                {medicationLoading ? "Saving..." : "Log Medication"}
-              </Button>
-
-              <div className="mt-4 pt-4 border-t">
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Monthly Adherence Rate</span>
-                  <span>{adherenceRate?.monthly_adherence_rate || 0}%</span>
+              {medicationsLoading ? (
+                <div>Loading medications...</div>
+              ) : medications && medications.length > 0 ? (
+                <div className="space-y-4">
+                  {medications.map((medication) => {
+                    const adherence = todayAdherence?.find(
+                      (a) => a.medication_id === medication.id
+                    );
+                    return (
+                      <div key={medication.id} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h4 className="font-medium">{medication.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {medication.dosage} - {medication.frequency}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant={adherence?.taken ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => {
+                                logAdherence.mutate({
+                                  medication_id: medication.id,
+                                  medication_name: medication.name,
+                                  taken: !adherence?.taken,
+                                  time_taken: new Date()
+                                    .toTimeString()
+                                    .slice(0, 5),
+                                  effectiveness_rating: 3,
+                                  notes: adherence?.taken
+                                    ? "Marked as missed"
+                                    : "Marked as taken",
+                                });
+                              }}
+                            >
+                              {adherence?.taken ? "Taken" : "Not Taken"}
+                            </Button>
+                          </div>
+                        </div>
+                        {adherence?.notes && (
+                          <p className="text-sm text-muted-foreground">
+                            Notes: {adherence.notes}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-                <Progress value={adherenceRate?.monthly_adherence_rate || 0} />
-              </div>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground mb-2">
+                    No medications added yet
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate("/medication")}
+                  >
+                    Add Medications
+                  </Button>
+                </div>
+              )}
+
+              {medications && medications.length > 0 && (
+                <div className="mt-6 pt-4 border-t">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Monthly Adherence Rate</span>
+                    <span>{adherenceRate?.monthly_adherence_rate || 0}%</span>
+                  </div>
+                  <Progress
+                    value={adherenceRate?.monthly_adherence_rate || 0}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
 

@@ -1,117 +1,87 @@
-
-import { Card } from "@/components/ui/card";
-import { CheckCircle2, XCircle, Calendar, BarChart2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { type MedicationAdherence } from "@/services/medicationService";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
 
-export function MedicationAdherence() {
-  // Sample adherence data
-  const adherenceData = {
-    weeklyRate: 92,
-    monthlyRate: 88,
-    missedDoses: [
-      { date: "Apr 12, 2025", medication: "Acamprosate - 333 mg", time: "2:00 PM" },
-      { date: "Apr 8, 2025", medication: "Bupropion - 150 mg", time: "9:00 PM" },
-    ],
-    dailyLog: [
-      { date: "Apr 15, 2025", status: "complete" },
-      { date: "Apr 14, 2025", status: "complete" },
-      { date: "Apr 13, 2025", status: "complete" },
-      { date: "Apr 12, 2025", status: "partial" },
-      { date: "Apr 11, 2025", status: "complete" },
-      { date: "Apr 10, 2025", status: "complete" },
-      { date: "Apr 9, 2025", status: "complete" },
-      { date: "Apr 8, 2025", status: "partial" },
-    ]
-  };
+interface MedicationAdherenceProps {
+  adherence?: MedicationAdherence[];
+  isLoading: boolean;
+}
+
+export function MedicationAdherence({
+  adherence,
+  isLoading,
+}: MedicationAdherenceProps) {
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    );
+  }
+
+  if (!adherence?.length) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">No adherence data available</p>
+      </div>
+    );
+  }
+
+  const takenCount = adherence.filter((a) => a.taken).length;
+  const adherenceRate = (takenCount / adherence.length) * 100;
 
   return (
-    <div className="space-y-6">
-      <Card className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-medium flex items-center gap-2">
-            <BarChart2 className="h-5 w-5 text-blue-500" />
-            Adherence Rate
-          </h3>
-          <Tabs defaultValue="week" className="w-[200px]">
-            <TabsList>
-              <TabsTrigger value="week">Week</TabsTrigger>
-              <TabsTrigger value="month">Month</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-        
-        <div className="space-y-6">
-          <TabsContent value="week" className="mt-2 space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Weekly Adherence</span>
-                <span className="font-medium">{adherenceData.weeklyRate}%</span>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Today's Adherence</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between mb-2">
+                <span className="text-sm font-medium">Overall Adherence</span>
+                <span className="text-sm font-medium">
+                  {adherenceRate.toFixed(1)}%
+                </span>
               </div>
-              <Progress value={adherenceData.weeklyRate} className="h-2" />
+              <Progress value={adherenceRate} className="h-2" />
             </div>
-          </TabsContent>
-          
-          <TabsContent value="month" className="mt-2 space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Monthly Adherence</span>
-                <span className="font-medium">{adherenceData.monthlyRate}%</span>
-              </div>
-              <Progress value={adherenceData.monthlyRate} className="h-2" />
-            </div>
-          </TabsContent>
-        </div>
-      </Card>
-
-      <Card className="p-4">
-        <h3 className="font-medium mb-4 flex items-center gap-2">
-          <XCircle className="h-5 w-5 text-red-500" />
-          Missed Doses
-        </h3>
-        {adherenceData.missedDoses.length > 0 ? (
-          <div className="space-y-3">
-            {adherenceData.missedDoses.map((dose, index) => (
-              <div key={index} className="flex items-start justify-between border-b pb-2 last:border-0">
-                <div>
-                  <p className="font-medium">{dose.medication}</p>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Calendar className="h-3.5 w-3.5" />
-                    <span>{dose.date}</span>
-                    <span className="mx-1">•</span>
-                    <span>{dose.time}</span>
+            <div className="grid gap-4">
+              {adherence.map((record) => (
+                <div
+                  key={record.id}
+                  className="flex items-center justify-between p-3 rounded-lg border"
+                >
+                  <div>
+                    <p className="font-medium">{record.medication_name}</p>
+                    {record.time_taken && (
+                      <p className="text-sm text-muted-foreground">
+                        Taken at{" "}
+                        {format(
+                          new Date(`2000-01-01T${record.time_taken}`),
+                          "h:mm a"
+                        )}
+                      </p>
+                    )}
+                  </div>
+                  <div
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      record.taken
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {record.taken ? "Taken" : "Missed"}
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">No missed doses this period. Great job!</p>
-        )}
-      </Card>
-
-      <Card className="p-4">
-        <h3 className="font-medium mb-4 flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-blue-500" />
-          Daily Log
-        </h3>
-        <div className="grid grid-cols-7 gap-2">
-          {adherenceData.dailyLog.map((day, index) => (
-            <div key={index} className="text-center">
-              <div className={`mx-auto flex h-9 w-9 items-center justify-center rounded-full 
-                ${day.status === 'complete' ? 'bg-green-100 text-green-700' : 
-                  day.status === 'partial' ? 'bg-yellow-100 text-yellow-700' : 
-                  'bg-red-100 text-red-700'}`}>
-                {day.status === 'complete' ? (
-                  <CheckCircle2 className="h-5 w-5" />
-                ) : (
-                  <XCircle className="h-5 w-5" />
-                )}
-              </div>
-              <div className="mt-1 text-xs">{day.date.split(',')[0]}</div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        </CardContent>
       </Card>
     </div>
   );
