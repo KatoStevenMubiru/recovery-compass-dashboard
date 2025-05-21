@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { DailyReportHeader } from "@/components/daily-reports/DailyReportHeader";
 import { SobrietyStatus } from "@/components/daily-reports/SobrietyStatus";
@@ -7,27 +7,38 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
 import { useDailyReport } from "@/hooks/useRecovery";
+import { generateDailyReportPDF } from "@/utils/pdfGenerator";
 
 const DailyReports = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const { toast } = useToast();
+  const reportRef = useRef<HTMLDivElement>(null);
 
   // Fetch daily report data
   const { data: dailyReport, isLoading } = useDailyReport(
     date ? format(date, "yyyy-MM-dd") : undefined
   );
 
-  const handleGeneratePDF = () => {
+  const handleGeneratePDF = async () => {
+    if (!reportRef.current || !date) return;
+
     setIsPdfGenerating(true);
-    setTimeout(() => {
-      setIsPdfGenerating(false);
+    try {
+      await generateDailyReportPDF(reportRef.current, date);
       toast({
         title: "PDF Generated",
         description: "Your daily report PDF has been generated successfully",
       });
-      console.log("PDF would be generated here");
-    }, 2000);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPdfGenerating(false);
+    }
   };
 
   // Prepare the data for display
@@ -93,7 +104,7 @@ const DailyReports = () => {
             No data available for this date.
           </div>
         ) : (
-          <div className="grid gap-6">
+          <div ref={reportRef} className="grid gap-6">
             <SobrietyStatus sobriety={`${reportData.sobriety} days`} />
             <Card className="p-6">
               <h2 className="text-2xl font-semibold mb-6">Daily Progress</h2>
