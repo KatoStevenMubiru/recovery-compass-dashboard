@@ -10,7 +10,6 @@ import {
   Task,
 } from "@/components/dashboard/widgets/DailyTaskList";
 import { RecoveryGoalsList } from "@/components/dashboard/widgets/RecoveryGoalsList";
-import { dailyTasks as mockDailyTasks } from "@/services/mockData";
 import { AddTaskForm } from "@/components/dashboard/forms/AddTaskForm";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,11 +21,36 @@ import {
 } from "@/components/ui/sheet";
 import { PlusCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  useDailyCheckIn,
+  useCreateDailyCheckIn,
+  useUpdateDailyCheckIn,
+  useGoals,
+  useCreateGoal,
+  useUpdateGoal,
+  useGoalProgress,
+} from "@/hooks/useRecovery";
+import { useTodaySobriety } from "@/hooks/useSobriety";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
-  const [tasks, setTasks] = useState<Task[]>(mockDailyTasks);
   const [isAddTaskSheetOpen, setIsAddTaskSheetOpen] = useState(false);
   const { user } = useAuth();
+  const { toast } = useToast();
+
+  // API Hooks
+  const { data: dailyCheckIn, isLoading: checkInLoading } = useDailyCheckIn();
+  const { mutate: createDailyCheckIn } = useCreateDailyCheckIn();
+  const { mutate: updateDailyCheckIn } = useUpdateDailyCheckIn();
+  const { data: sobrietyResponse, isLoading: sobrietyLoading } =
+    useTodaySobriety();
+  const { data: goals, isLoading: goalsLoading } = useGoals();
+  const { mutate: createGoal } = useCreateGoal();
+  const { mutate: updateGoal } = useUpdateGoal();
+  const { data: goalProgress } = useGoalProgress();
+
+  // Daily Tasks State
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const addTask = (title: string) => {
     const newTask: Task = {
@@ -42,6 +66,66 @@ const Index = () => {
       tasks.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
+    );
+  };
+
+  const handleGoalSubmit = (description: string) => {
+    if (description.trim() === "") {
+      toast({
+        title: "Empty goal",
+        description: "Please enter a goal before saving.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    createGoal(
+      { description, accomplished: false },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Goal created",
+            description: "Your recovery goal has been created successfully.",
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: "Error",
+            description: "Failed to create goal. Please try again.",
+            variant: "destructive",
+          });
+          console.error("Create goal error:", error);
+        },
+      }
+    );
+  };
+
+  const handleGoalToggle = (goalId: number, accomplished: boolean) => {
+    updateGoal(
+      {
+        goalId,
+        data: { accomplished: !accomplished },
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: accomplished
+              ? "Goal marked as incomplete"
+              : "Goal accomplished!",
+            description: accomplished
+              ? "You can still work on this goal."
+              : "Great job! Keep up the good work!",
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: "Error",
+            description: "Failed to update goal. Please try again.",
+            variant: "destructive",
+          });
+          console.error("Update goal error:", error);
+        },
+      }
     );
   };
 
@@ -91,7 +175,13 @@ const Index = () => {
             <DailyTaskList tasks={tasks} toggleTask={toggleTask} />
           </div>
 
-          <RecoveryGoalsList />
+          <RecoveryGoalsList
+            goals={goals}
+            isLoading={goalsLoading}
+            goalProgress={goalProgress}
+            onCreateGoal={handleGoalSubmit}
+            onToggleGoal={handleGoalToggle}
+          />
         </div>
       </div>
     </DashboardLayout>

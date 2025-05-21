@@ -2,33 +2,66 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckSquare, Square, Target } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 
-// Mock data for recovery goals - replace with actual data source
-const mockRecoveryGoals = [
-  { id: "1", title: "Attend a support group meeting", completed: false },
-  { id: "2", title: "Practice mindfulness for 10 minutes", completed: true },
-  { id: "3", title: "Read a chapter from a recovery book", completed: false },
-];
-
-interface RecoveryGoal {
-  id: string;
-  title: string;
-  completed: boolean;
+interface Goal {
+  id: number;
+  user: number;
+  date: string;
+  description: string;
+  accomplished: boolean;
 }
 
-export const RecoveryGoalsList = () => {
-  const [goals, setGoals] = useState<RecoveryGoal[]>(mockRecoveryGoals);
+interface GoalProgress {
+  total_goals: number;
+  accomplished: number;
+  progress_rate: number;
+}
 
-  const toggleGoal = (id: string) => {
-    setGoals(
-      goals.map((goal) =>
-        goal.id === id ? { ...goal, completed: !goal.completed } : goal
-      )
-    );
+interface RecoveryGoalsListProps {
+  goals: Goal[] | undefined;
+  isLoading: boolean;
+  goalProgress: GoalProgress | undefined;
+  onCreateGoal: (description: string) => void;
+  onToggleGoal: (goalId: number, accomplished: boolean) => void;
+}
+
+export const RecoveryGoalsList = ({
+  goals,
+  isLoading,
+  goalProgress,
+  onCreateGoal,
+  onToggleGoal,
+}: RecoveryGoalsListProps) => {
+  const [newGoal, setNewGoal] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newGoal.trim()) {
+      onCreateGoal(newGoal);
+      setNewGoal("");
+    }
   };
 
-  const completedGoals = goals.filter(goal => goal.completed).length;
-  const totalGoals = goals.length;
+  if (isLoading) {
+    return (
+      <Card className="gradient-card border-0 shadow-md">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg text-primary flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Recovery Goals
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-3">
+            <p className="text-sm text-muted-foreground">Loading goals...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="gradient-card border-0 shadow-md">
@@ -39,26 +72,48 @@ export const RecoveryGoalsList = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex justify-between mb-4 text-sm">
-          <span>Your active goals</span>
-          <span>{completedGoals}/{totalGoals} completed</span>
-        </div>
+        <form onSubmit={handleSubmit} className="mb-4">
+          <Textarea
+            placeholder="Add a new recovery goal..."
+            value={newGoal}
+            onChange={(e) => setNewGoal(e.target.value)}
+            className="mb-2"
+          />
+          <Button type="submit" className="w-full">
+            Add Goal
+          </Button>
+        </form>
+
+        {goalProgress && (
+          <div className="space-y-2 mb-4">
+            <div className="flex justify-between text-sm">
+              <span>Progress</span>
+              <span>
+                {goalProgress.accomplished}/{goalProgress.total_goals} completed
+              </span>
+            </div>
+            <Progress value={goalProgress.progress_rate} className="h-2" />
+          </div>
+        )}
+
         <div className="space-y-2">
-          {goals.map((goal) => (
+          {goals?.map((goal) => (
             <div
               key={goal.id}
               className="flex items-center gap-2 py-1 cursor-pointer hover:bg-muted/30 rounded px-1"
-              onClick={() => toggleGoal(goal.id)}
+              onClick={() => onToggleGoal(goal.id, goal.accomplished)}
             >
-              {goal.completed ? (
+              {goal.accomplished ? (
                 <CheckSquare className="h-5 w-5 text-primary" />
               ) : (
                 <Square className="h-5 w-5 text-muted-foreground" />
               )}
-              <span className={cn(
-                goal.completed && "line-through text-muted-foreground"
-              )}>
-                {goal.title}
+              <span
+                className={cn(
+                  goal.accomplished && "line-through text-muted-foreground"
+                )}
+              >
+                {goal.description}
               </span>
             </div>
           ))}
@@ -66,4 +121,4 @@ export const RecoveryGoalsList = () => {
       </CardContent>
     </Card>
   );
-}; 
+};

@@ -63,6 +63,19 @@ interface DailyReport {
   goals_progress: number;
 }
 
+interface WeeklyMoodCravingsResponse {
+  weekly_data: {
+    date: string;
+    mood: number | null;
+    cravings: number | null;
+    mood_notes: string | null;
+  }[];
+  averages: {
+    mood_average: number | null;
+    cravings_average: number | null;
+  };
+}
+
 export const recoveryService = {
   // Daily Check-in
   async getDailyCheckIn(token: string): Promise<DailyCheckIn> {
@@ -295,6 +308,22 @@ export const recoveryService = {
       },
     });
     if (!response.ok) throw new Error("Failed to fetch daily report");
+    return response.json();
+  },
+
+  async getWeeklyMoodCravings(
+    token: string
+  ): Promise<WeeklyMoodCravingsResponse> {
+    const response = await fetch(
+      `${API_URL}api/recovery/weekly-mood-cravings/`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok)
+      throw new Error("Failed to fetch weekly mood and cravings data");
     return response.json();
   },
 };
