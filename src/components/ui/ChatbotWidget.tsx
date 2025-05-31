@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ReactMarkdown from "react-markdown";
+
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const ChatbotWidget = () => {
   const [open, setOpen] = useState(false);
@@ -9,6 +12,8 @@ const ChatbotWidget = () => {
     { from: "bot", text: "Hi! How can I help you today?" },
   ]);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (open && chatEndRef.current) {
@@ -16,17 +21,52 @@ const ChatbotWidget = () => {
     }
   }, [messages, open]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
     setMessages((msgs) => [...msgs, { from: "user", text: input }]);
     setInput("");
-    // Simulate bot reply
-    setTimeout(() => {
+    setLoading(true);
+    setError("");
+    let botMsgIndex = null;
+    try {
+      const response = await fetch(`${API_URL}/api/chatbot/ask/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input }),
+      });
+      if (!response.ok || !response.body)
+        throw new Error("Failed to get reply");
+      // Add a placeholder for the bot's message
+      setMessages((msgs) => {
+        botMsgIndex = msgs.length;
+        return [...msgs, { from: "bot", text: "" }];
+      });
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let botText = "";
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        if (value) {
+          botText += decoder.decode(value, { stream: !done });
+          setMessages((msgs) => {
+            // Update the last bot message with the new text
+            const updated = [...msgs];
+            updated[botMsgIndex] = { from: "bot", text: botText };
+            return updated;
+          });
+        }
+      }
+    } catch (err) {
       setMessages((msgs) => [
         ...msgs,
-        { from: "bot", text: "I'm just a demo bot!" },
+        { from: "bot", text: "Sorry, there was an error. Please try again." },
       ]);
-    }, 800);
+      setError("Failed to get reply from chatbot.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -66,7 +106,9 @@ const ChatbotWidget = () => {
             <div className="bg-white dark:bg-zinc-900 rounded-t-2xl md:rounded-2xl shadow-2xl flex flex-col h-[70vh] max-h-[500px] md:h-[500px] w-full md:w-96 animate-fadeInUp">
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-muted bg-primary/90 rounded-t-2xl md:rounded-t-2xl">
-                <span className="font-semibold text-primary-foreground">Chat with us</span>
+                <span className="font-semibold text-primary-foreground">
+                  Chat with us
+                </span>
                 <Button
                   size="icon"
                   variant="ghost"
@@ -82,7 +124,9 @@ const ChatbotWidget = () => {
                 {messages.map((msg, i) => (
                   <div
                     key={i}
-                    className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex ${
+                      msg.from === "user" ? "justify-end" : "justify-start"
+                    }`}
                   >
                     <div
                       className={`rounded-lg px-4 py-2 max-w-[80%] text-sm shadow-sm ${
@@ -91,16 +135,43 @@ const ChatbotWidget = () => {
                           : "bg-white dark:bg-zinc-800 text-foreground rounded-bl-none border border-muted"
                       }`}
                     >
-                      {msg.text}
+                      {msg.from === "bot"
+                        ? (() => {
+                            let text = msg.text;
+                            try {
+                              const parsed = JSON.parse(msg.text);
+                              if (
+                                parsed &&
+                                typeof parsed === "object" &&
+                                parsed.reply
+                              ) {
+                                text = parsed.reply;
+                              }
+                            } catch (e) {
+                              // Ignore JSON parse errors, fallback to plain text
+                            }
+                            return <ReactMarkdown>{text}</ReactMarkdown>;
+                          })()
+                        : msg.text}
                     </div>
                   </div>
                 ))}
+                {loading && (
+                  <div className="flex justify-start">
+                    <div className="rounded-lg px-4 py-2 max-w-[80%] text-sm shadow-sm bg-white dark:bg-zinc-800 text-foreground rounded-bl-none border border-muted opacity-70">
+                      ...
+                    </div>
+                  </div>
+                )}
+                {error && (
+                  <div className="text-xs text-red-500 px-2 pt-1">{error}</div>
+                )}
                 <div ref={chatEndRef} />
               </div>
               {/* Input */}
               <form
                 className="flex items-center gap-2 px-4 py-3 border-t border-muted bg-background"
-                onSubmit={e => {
+                onSubmit={(e) => {
                   e.preventDefault();
                   handleSend();
                 }}
@@ -109,7 +180,7 @@ const ChatbotWidget = () => {
                   className="flex-1 rounded-full border border-muted px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="Type your message..."
                   value={input}
-                  onChange={e => setInput(e.target.value)}
+                  onChange={(e) => setInput(e.target.value)}
                   autoFocus
                 />
                 <Button
@@ -139,4 +210,4 @@ const ChatbotWidget = () => {
   );
 };
 
-export default ChatbotWidget; 
+export default ChatbotWidget;
