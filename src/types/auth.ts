@@ -3,6 +3,9 @@ export interface User {
   email: string;
   first_name: string;
   last_name: string;
+  anonymous_name: string;
+  student_id: string;
+  role: string;
 }
 
 export interface AuthResponse {
