@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import authService from "@/services/authService";
 import { recoveryService } from "@/services/recoveryService";
+import { useState, useCallback } from "react";
 
 // Daily Check-in
 export function useDailyCheckIn() {
@@ -175,4 +176,46 @@ export function useDailyReport(date?: string) {
     queryFn: () =>
       recoveryService.getDailyReport(authService.getAccessToken(), date),
   });
+}
+
+// Personalized Recommendations Streaming
+export function usePersonalizedRecommendationsStream() {
+  const [recommendations, setRecommendations] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const startStream = useCallback(async () => {
+    setRecommendations("");
+    setLoading(true);
+    setError(null);
+    try {
+      const token = authService.getAccessToken();
+      if (!token) throw new Error("Not authenticated");
+      const reader = await recoveryService.streamPersonalizedRecommendations(
+        token
+      );
+      const decoder = new TextDecoder();
+      let done = false;
+      let result = "";
+      while (!done) {
+        const { value, done: streamDone } = await reader.read();
+        if (value) {
+          const chunk = decoder.decode(value, { stream: !streamDone });
+          result += chunk;
+          setRecommendations((prev) => prev + chunk);
+        }
+        done = streamDone;
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Failed to fetch recommendations");
+      } else {
+        setError("Failed to fetch recommendations");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { recommendations, loading, error, startStream };
 }

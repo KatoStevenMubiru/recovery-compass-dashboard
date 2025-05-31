@@ -326,4 +326,23 @@ export const recoveryService = {
       throw new Error("Failed to fetch weekly mood and cravings data");
     return response.json();
   },
+
+  async streamPersonalizedRecommendations(
+    token: string
+  ): Promise<ReadableStreamDefaultReader<Uint8Array>> {
+    const response = await fetch(
+      `${API_URL}api/chatbot/personalized-recommendations/`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "text/plain",
+        },
+      }
+    );
+    if (!response.ok || !response.body)
+      throw new Error("Failed to fetch recommendations");
+    // Return a reader for the response body
+    return response.body.getReader();
+  },
 };

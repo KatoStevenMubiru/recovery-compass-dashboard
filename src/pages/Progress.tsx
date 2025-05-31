@@ -63,9 +63,10 @@ import {
   useUpdateGoal,
   useGoalProgress,
   useRiskScore,
+  usePersonalizedRecommendationsStream,
 } from "@/hooks/useRecovery";
 import { useMedications, useMedicationAdherence } from "@/hooks/useMedication";
-import { useNavigate } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 
 const RecoveryProgress = () => {
   const { toast } = useToast();
@@ -127,7 +128,46 @@ const RecoveryProgress = () => {
     logAdherence,
   } = useMedicationAdherence();
 
-  const navigate = useNavigate();
+  const {
+    recommendations,
+    loading: recLoading,
+    error: recError,
+    startStream,
+  } = usePersonalizedRecommendationsStream();
+
+  // Helper: check if all required data is filled for today
+  const canGetRecommendations =
+    sobriety &&
+    sobrietyResponse?.is_today &&
+    dailyCheckIn &&
+    medications &&
+    medications.length > 0 &&
+    todayAdherence &&
+    todayAdherence.length === medications.length &&
+    todayAdherence.every((a) => a.taken !== undefined);
+
+  // Helper: parse recommendations into sections
+  const parseSections = (text: string) => {
+    const recMatch = text.match(
+      /Personalized Recommendations:[\s\S]*?(?=Risk Factors:|$)/
+    );
+    const riskMatch = text.match(
+      /Risk Factors:[\s\S]*?(?=Protective Factors:|$)/
+    );
+    const protMatch = text.match(/Protective Factors:[\s\S]*$/);
+    return {
+      recommendations: recMatch
+        ? recMatch[0].replace("Personalized Recommendations:", "").trim()
+        : "",
+      riskFactors: riskMatch
+        ? riskMatch[0].replace("Risk Factors:", "").trim()
+        : "",
+      protectiveFactors: protMatch
+        ? protMatch[0].replace("Protective Factors:", "").trim()
+        : "",
+    };
+  };
+  const parsed = parseSections(recommendations);
 
   const handleSoberDateSave = () => {
     if (!selectedSoberDate) {
@@ -145,8 +185,8 @@ const RecoveryProgress = () => {
       last_relapse_date: sobriety?.last_relapse_date || null,
     };
 
-    if (sobriety) {
-      // Update existing entry
+    if (sobriety && sobrietyResponse?.is_today) {
+      // Update existing entry for today (PATCH)
       updateSobriety(sobrietyData, {
         onSuccess: () => {
           toast({
@@ -165,7 +205,7 @@ const RecoveryProgress = () => {
         },
       });
     } else {
-      // Create new entry
+      // Create new entry for today (POST)
       createSobriety(sobrietyData, {
         onSuccess: () => {
           toast({
@@ -727,10 +767,7 @@ const RecoveryProgress = () => {
                   <p className="text-muted-foreground mb-2">
                     No medications added yet
                   </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate("/medication")}
-                  >
+                  <Button variant="outline" disabled>
                     Add Medications
                   </Button>
                 </div>
@@ -834,13 +871,6 @@ const RecoveryProgress = () => {
               <CardTitle className="text-lg">
                 Personalized Recovery Plan
               </CardTitle>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowDetails(!showDetails)}
-              >
-                {showDetails ? "Hide" : "View"} Details
-              </Button>
             </div>
           </CardHeader>
           <CardContent>
@@ -868,71 +898,54 @@ const RecoveryProgress = () => {
               </div>
             </div>
 
-            <div>
-              <h4 className="font-medium mb-2">
-                Personalized Recommendations:
-              </h4>
-              <ul className="list-disc pl-5 space-y-1">
-                {[
-                  "Schedule two study sessions with your academic advisor",
-                  "Increase sleep hygiene by maintaining a consistent bedtime",
-                  "Consider joining the Wednesday support group for additional community support",
-                ].map((rec, i) => (
-                  <li key={i} className="text-sm">
-                    {rec}
-                  </li>
-                ))}
-              </ul>
+            <div className="mb-4">
+              <Button
+                onClick={startStream}
+                disabled={!canGetRecommendations || recLoading}
+                className="mb-2"
+              >
+                {recLoading
+                  ? "Getting Recommendations..."
+                  : "Get Recommendations"}
+              </Button>
+              {!canGetRecommendations && (
+                <div className="text-xs text-muted-foreground mb-2">
+                  Please complete Sobriety Tracker, Mood & Cravings, and
+                  Medication Adherence for today to get recommendations.
+                </div>
+              )}
+              {recError && (
+                <div className="text-red-600 text-xs mb-2">{recError}</div>
+              )}
             </div>
 
-            {showDetails && (
-              <div className="mt-6 space-y-4 pt-4 border-t">
+            {recommendations && (
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-medium mb-2">
+                    Personalized Recommendations:
+                  </h4>
+                  <div className="prose prose-sm max-w-none bg-secondary/10 rounded-lg p-3">
+                    <ReactMarkdown>
+                      {parsed.recommendations || "*No recommendations yet.*"}
+                    </ReactMarkdown>
+                  </div>
+                </div>
                 <div>
                   <h4 className="font-medium mb-2">Risk Factors:</h4>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {[
-                      "Recent academic stress",
-                      "Changes in social environment",
-                    ].map((factor, i) => (
-                      <li key={i} className="text-sm">
-                        {factor}
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="prose prose-sm max-w-none bg-secondary/10 rounded-lg p-3">
+                    <ReactMarkdown>
+                      {parsed.riskFactors || "*No risk factors yet.*"}
+                    </ReactMarkdown>
+                  </div>
                 </div>
-
                 <div>
                   <h4 className="font-medium mb-2">Protective Factors:</h4>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {[
-                      "Strong support system",
-                      "Consistent medication adherence",
-                      "Regular therapy attendance",
-                    ].map((factor, i) => (
-                      <li key={i} className="text-sm">
-                        {factor}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className="font-medium mb-2">Weekly Mood Trends:</h4>
-                  <div className="h-32 flex items-end gap-2">
-                    {[6, 7, 5, 8, 6, 7, 8].map((val, i) => (
-                      <div
-                        key={i}
-                        className="flex-1 flex flex-col items-center gap-1"
-                      >
-                        <div
-                          className="w-full bg-primary/70 rounded-t"
-                          style={{ height: `${(val / 10) * 100}%` }}
-                        ></div>
-                        <span className="text-xs">
-                          {["M", "T", "W", "T", "F", "S", "S"][i]}
-                        </span>
-                      </div>
-                    ))}
+                  <div className="prose prose-sm max-w-none bg-secondary/10 rounded-lg p-3">
+                    <ReactMarkdown>
+                      {parsed.protectiveFactors ||
+                        "*No protective factors yet.*"}
+                    </ReactMarkdown>
                   </div>
                 </div>
               </div>
