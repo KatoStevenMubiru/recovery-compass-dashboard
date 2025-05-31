@@ -1,14 +1,26 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { journalEntries } from "@/services/mockData";
+import { useQuery } from "@tanstack/react-query";
+import {
+  userJournalService,
+  UserJournalEntry,
+} from "@/services/userJournalService";
 import { Link } from "react-router-dom";
 
 export const JournalPreview = () => {
-  const latestEntry = journalEntries[0];
-  
+  const {
+    data: entries,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<UserJournalEntry[]>({
+    queryKey: ["user-journal-entries"],
+    queryFn: userJournalService.getAllJournalEntries,
+  });
+  const latestEntry = entries && entries.length > 0 ? entries[0] : null;
+
   return (
     <Card className="gradient-card border-0 shadow-md">
       <CardHeader className="pb-2">
@@ -19,20 +31,36 @@ export const JournalPreview = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <div className="text-xs text-muted-foreground">
-            {format(new Date(latestEntry.date), "MMMM d, yyyy")}
-          </div>
-          <h3 className="font-semibold">{latestEntry.title}</h3>
-          <p className="text-sm text-muted-foreground line-clamp-3">
-            {latestEntry.content}
-          </p>
-          <div className="flex justify-between items-center pt-2">
-            <div className="flex items-center">
-              <span className="text-xs font-medium mr-1">Mood:</span>
-              <span className="text-xs">{latestEntry.mood}/10</span>
+          {isLoading && (
+            <div className="text-xs text-muted-foreground">Loading...</div>
+          )}
+          {isError && (
+            <div className="text-xs text-destructive">
+              {(error as Error).message}
             </div>
+          )}
+          {latestEntry ? (
+            <>
+              <div className="text-xs text-muted-foreground">
+                {format(new Date(latestEntry.created_at), "MMMM d, yyyy")}
+              </div>
+              <h3 className="font-semibold">{latestEntry.title}</h3>
+              <p className="text-sm text-muted-foreground line-clamp-3">
+                {latestEntry.content}
+              </p>
+            </>
+          ) : !isLoading && !isError ? (
+            <div className="text-xs text-muted-foreground">
+              No journal entries yet.
+            </div>
+          ) : null}
+          <div className="flex justify-between items-center pt-2">
             <Link to="/journal">
-              <Button variant="ghost" size="sm" className="text-primary flex items-center gap-1 text-xs">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-primary flex items-center gap-1 text-xs"
+              >
                 View all entries
                 <ChevronRight className="h-3 w-3" />
               </Button>
